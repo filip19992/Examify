@@ -25,4 +25,14 @@ public class TemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    @GetMapping("/exam")
+    public ResponseEntity<String> exam() {
+        Resource resource = resourceLoader.getResource("classpath:/static/exam.html");
+        try {
+            String content = new String(resource.getInputStream().readAllBytes());
+            return ResponseEntity.ok(content);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

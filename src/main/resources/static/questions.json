@@ -1,7 +1,4 @@
 {
-  "examMaxTime": 90,
-  "questions": [
-    {
       "q": "Ile to jest 10 / 2 ?",
       "answers": [
         "4",
@@ -47,5 +44,4 @@
       ],
       "correctAnswerNum": 2
     }
-  ]
 }
