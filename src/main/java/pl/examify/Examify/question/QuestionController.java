@@ -54,7 +54,6 @@ public class QuestionController {
     @DeleteMapping("/question/{id}")
     public ResponseEntity<HttpStatus> deleteQuestionById(@PathVariable("id") long id) {
         try {
-            //check if employee exist in database
             Question question = getQuestionBy(id);
 
             if (question != null) {
