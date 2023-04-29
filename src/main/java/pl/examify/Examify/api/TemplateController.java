@@ -16,8 +16,8 @@ public class TemplateController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<String> index() {
-        Resource resource = resourceLoader.getResource("classpath:/static/index.html");
+    public ResponseEntity<String> main() {
+        Resource resource = resourceLoader.getResource("classpath:/static/main.html");
         try {
             String content = new String(resource.getInputStream().readAllBytes());
             return ResponseEntity.ok(content);

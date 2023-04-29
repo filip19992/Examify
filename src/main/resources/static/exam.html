@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=chrome">
+    <meta name="viewport" content="width=device-width", initial-scale="1.0">
+    <title>Exam</title>
+    <style>
+        *{
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    margin: 0;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #efefef;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.exam-container {
+    width: 600px;
+    border-radius: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px 2px rgba(120, 120, 120, 0.2);
+    overflow: hidden;
+}
+
+.exam-header {
+    display: flex;
+    padding: 1rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.exam-question {
+    text-align: center;
+    padding: 0.1rem;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.exam-body, .summary {
+    padding: 0 2rem;
+    margin-bottom: 2rem;
+}
+
+ul {
+    list-style-type: none;
+}
+
+ul li {
+    margin: 1rem 0;
+    display: flex;
+    font-size: 1.2rem;
+}
+
+ul li input {
+    align-self: center;
+    margin-right: 15px;
+    cursor: pointer;
+}
+
+ul li label {
+    flex-grow: 1;
+    cursor: pointer;
+}
+
+button {
+    display: block;
+    padding: 1rem;
+    width: 100%;
+    border: none;
+    background-color: #18d771;
+    cursor: pointer;
+    color: #fff;
+    font-size: 1.1rem;
+    font-family: inherit;
+}
+
+button:hover {
+    background-color: #18d771;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.summary {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.summary ul {
+    margin-bottom: 2rem;
+}
+
+li.correct-answer {
+    background-color: #b6eff7;
+}
+
+li.wrong-answer {
+    background-color: #f96868;
+}
+
+li.correct-answer, li.wrong-answer {
+    border-radius: 5px;
+    padding:  0.1rem;
+}
+
+</style>
+</head>
+<body>
+<header></header>
+<div class="exam-container" id="exam">
+    <div class="exam-header">
+        <div id="progress">Pytanie 1 z 5</div>
+        <div id="count-down"></div>
+    </div>
+    <div class="exam-question">
+        <div id="question-heading">Pytanie</div>
+    </div>
+    <div class="exam-body">
+        <ul id="answers-list">
+
+            <li>
+                <input type="radio" name="answer" class="answer" id="answer0">
+                <label for="answer0">Odpowiedzi</label>
+            </li>
+        </ul>
+    </div>
+    <div class="summary"></div>
+
+    <button id="submit-answer">Dalej</button>
+</div>
+
+<script>
+
+window.onload = function() {
+    exam.init();
+}
+
+class Exam {
+    currentQuestionIndex = -1;
+
+    async init() {
+        console.log("init app");
+
+        this.progress = document.querySelector("#progress");
+        this.countDownInfo = document.querySelector("#count-down");
+        this.questionHeading = document.getElementById("question-heading");
+
+        this.answersList = document.querySelector("#answers-list");
+        this.summary = document.querySelector(".summary");
+
+        this.submitButton = document.querySelector("#submit-answer");
+        this.submitButton.addEventListener("click", this.submitAnswer);
+
+
+        await this.loadData();
+
+    }
+
+    loadData = async () => {
+        const serverData = await fetch("questions.json");
+        const jsonData = await serverData.json();
+
+        if (!jsonData.questions) {
+            console.log("Brak pytań");
+            return;
+        }
+
+        this.examMaxTime = jsonData.examMaxTime * 1000;
+        this.questions = jsonData.questions;
+    }
+
+    submitAnswer = () => {
+        let userSelectedInput =
+            document.querySelector("input[type='radio']:checked");
+            //console.log(userSelectedInput);
+
+        const userSelectedIndex = userSelectedInput.getAttribute("data-index");
+
+        const question = this.questions[ this.currentQuestionIndex ];
+        question.userSelectedIndex = userSelectedIndex;
+
+        if (userSelectedInput) this.setNextQuestionData();
+    }
+
+    countDown = () => {
+        if (!this.countDownInterval) {
+            this.examStartTime = new Date().getTime();
+            this.examEndTime = this.examStartTime + this.examMaxTime;
+
+            this.countDownInterval = setInterval( () => {
+                const currentTime = new Date().getTime();
+
+                if (currentTime >= this.examEndTime) {
+                    console.log("Koniec egzaminu");
+                    this.stopCountDown();
+                    this.showSummary();
+                    return;
+                }
+
+                let timeLeft = Math.floor( (this.examEndTime - currentTime) / 1000 );
+
+                this.countDownInfo.innerHTML = "Pozostało: " + timeLeft + " sekund";
+            }, 1000 );
+        }
+    }
+
+    stopCountDown = () => {
+        clearInterval( this.countDownInterval );
+        this.countDownInterval = null;
+        this.countDownInfo.innerHTML = "";
+    }
+
+    setNextQuestionData = () => {
+        this.currentQuestionIndex++;
+
+        if (this.currentQuestionIndex >= this.questions.length) {
+            console.log("Koniec examinu");
+            this.showSummary();
+            return;
+        }
+
+        const question = this.questions[ this.currentQuestionIndex ];
+        this.questionHeading.innerHTML = question.q;
+
+        const progressStr = `Pytanie ${this.currentQuestionIndex+1}
+            z ${this.questions.length}`;
+        this.progress.innerHTML = progressStr;
+
+        const answersHtml = question.answers.map( (answerText, index) => {
+            const answerId = "answer" + index;
+            return `
+                <li>
+                    <input type="radio" name="answer" id="${answerId}"
+                        data-index="${index}" class="answer">
+                    <label for="${answerId}">
+                        ${answerText}
+                    </label>
+                </li>
+            `;
+        } ).join("");
+
+        this.answersList.innerHTML = answersHtml;
+    }
+
+    showSummary = () => {
+        this.stopCountDown();
+
+        this.answersList.classList.add("hide");
+        this.submitButton.classList.add("hide");
+        this.summary.classList.remove("hide");
+
+        this.questionHeading.innerHTML = "Podsumowanie wyników:";
+
+        let numCorrectAnswers = 0;
+
+        let summaryHtml = this.questions.map( (question, questionIndex) => {
+            const answerId = "answer" + questionIndex;
+
+            const answersHtml = question.answers.map( (answerText, answerIndex) => {
+                let classToAdd = "";
+                let checkedAttr = "";
+
+                if (question.userSelectedIndex !== undefined) {
+
+                    if (question.userSelectedIndex == question.correctAnswerNum
+                        && answerIndex == question.correctAnswerNum) {
+                            classToAdd = "correct-answer";
+                            checkedAttr = "checked";
+
+                            numCorrectAnswers++;
+                    }
+
+                    if (question.userSelectedIndex != question.correctAnswerNum
+                        && answerIndex == question.userSelectedIndex) {
+                        classToAdd = "wrong-answer";
+                        checkedAttr = "checked";
+                    }
+                }
+
+                return `
+                    <li class="${classToAdd}">
+                        <input ${checkedAttr} disabled type="radio" name="answer"
+                            id="${answerId}" data-index="" class="answer">
+                        <label for="${answerId}"> ${answerText} </label>
+                    </li>
+                `;
+            } ).join("");
+
+            this.summary.scrollTop = 0;
+
+            return `
+                <h4>Pytanie nr. ${questionIndex} : ${question.q} </h4>
+                <ul>
+                    ${answersHtml}
+                </ul>
+            `;
+        } ).join("");
+
+        summaryHtml += `
+            <hr>
+            <h3> Ilość prawidłowych odpowiedzi: ${numCorrectAnswers}, na
+            ${this.questions.length} </h3>
+        `;
+
+        this.summary.innerHTML = summaryHtml;
+    }
+}
+
+const exam = new Exam();
+        </script>
+</body>
+</html>
