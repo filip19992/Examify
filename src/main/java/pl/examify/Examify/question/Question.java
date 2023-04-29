@@ -1,4 +1,4 @@
-package pl.examify.Examify;
+package pl.examify.Examify.question;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
