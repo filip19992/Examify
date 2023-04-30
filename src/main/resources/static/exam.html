@@ -6,46 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
-   $(document).ready(function () {
-        $.ajax({
-        url: "/questions",
-        type: "GET",
-        success: function (data) {
-        // Replace "Loading question..." with the first question content from /questions
-        $("#question-heading").text(data[0].content);
+$(document).ready(function () {
+  var currentQuestion = 0;
+  var correctAnswers = 0;
+  var questions;
 
-        // Clear the existing todo list
-        $("#todo-list").empty();
+  // Fetch questions from /questions API endpoint
+  $.ajax({
+    url: "/questions",
+    type: "GET",
+    success: function (data) {
+      questions = data;
+      renderQuestion(questions[currentQuestion]);
+    },
+  });
 
-         // Add each todo as a new <li> element with a "Mark as Complete" button to the list
-        $.each(data, function (index, todo) {
-         var listItem = $("<li>").text(todo.title + " - " + todo.content);
+  // Render the question and answers
+  function renderQuestion(question) {
+    $("#question-heading").text(question.question.content);
 
-         // Create the "Mark as Complete" button
-             var completeButton = $("<button>")
-            .text("Mark as Complete")
-            .addClass("complete-todo");
+    $("#answers-list").empty();
+    $.each(question.answers, function (index, answer) {
+      var listItem = $("<li>");
+      var radioButton = $("<input>")
+        .attr("type", "radio")
+        .attr("name", "answer")
+        .attr("id", "answer" + index)
+        .addClass("answer")
+        .data("isGoodAnswer", answer.isGoodAnswer);
+      var label = $("<label>")
+        .attr("for", "answer" + index)
+        .text(answer.content);
 
-        // Add an event listener to the button that sends an AJAX request to mark the corresponding todo as complete
-        completeButton.on("click", function () {
-          $.ajax({
-            url: "/todo/complete",
-            type: "POST",
-            data: JSON.stringify({ title: todo.title }),
-            contentType: "application/json",
-            success: function () {
-              location.reload();
-            }
-          });
-        });
+      listItem.append(radioButton);
+      listItem.append(label);
+      $("#answers-list").append(listItem);
+    });
 
-        // Append the button to the todo item
-        listItem.append(completeButton);
+    $("#progress").text("Pytanie " + (currentQuestion + 1) + " z " + questions.length);
+  }
 
-        // Append the todo item to the todo list
-        $("#todo-list").append(listItem);
-      });
+  // Handle clicking the "Next" button
+  $("#submit-answer").on("click", function () {
+    // Check if an answer was selected
+    if (!$("input[name='answer']:checked").val()) {
+      alert("Proszę wybrać odpowiedź.");
+      return;
+    }
+
+    // Increment the correct answer count if the selected answer is correct
+    if ($("input[name='answer']:checked").data("isGoodAnswer")) {
+      correctAnswers++;
+    }
+
+    // If there are more questions, render the next one
+    if (currentQuestion < questions.length - 1) {
+      currentQuestion++;
+      renderQuestion(questions[currentQuestion]);
+    } else {
+      // If there are no more questions, show the summary
+      var percentage = Math.round((correctAnswers / questions.length) * 100);
+      $("#progress").text("Podsumowanie");
+      $("#question-heading").text("Udzielono " + correctAnswers + " poprawnych odpowiedzi na " + questions.length + " pytań. Wynik: " + percentage + "%");
+      $("#answers-list").empty();
+      $(".summary").text("Dziękujemy za udział w teście.");
+      $("#submit-answer").hide();
     }
   });
 });
