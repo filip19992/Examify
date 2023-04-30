@@ -11,21 +11,34 @@ import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
-    private final QuestionRepository questionRepositor;
+    private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
 
-    public QuestionService(QuestionRepository questionRepositor, AnswerRepository answerRepository) {
-        this.questionRepositor = questionRepositor;
+    public QuestionService(QuestionRepository questionRepository, AnswerRepository answerRepository) {
+        this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
     }
 
     public List<QuestionAnswersDTO> findAll() {
-        List<Question> questions = questionRepositor.findAll();
+        List<Question> questions = questionRepository.findAll();
 
         return questions
                 .stream()
                 .map(c -> new QuestionAnswersDTO(c, getAnswersByQuestionId(c)))
                 .collect(Collectors.toList());
+    }
+
+    public Question addQuestion(QuestionAnswersDTO questionAnswersDTO) {
+        Question newQuestion = questionRepository
+                .save(Question.builder()
+                        .content(questionAnswersDTO.getQuestion().getContent())
+                        .build());
+
+        List<AnswerDTO> answers = questionAnswersDTO.getAnswers();
+
+        answers.forEach(answer -> answerRepository.save(new Answer(newQuestion, answer.getContent(), answer.getIsGoodAnswer())));
+
+        return newQuestion;
     }
 
     private List<AnswerDTO> getAnswersByQuestionId(Question c) {
