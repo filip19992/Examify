@@ -1,7 +1,5 @@
 package pl.examify.Examify.config;
 
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +15,7 @@ import pl.examify.Examify.user.roles.PrivilegeRepository;
 import pl.examify.Examify.user.roles.Role;
 import pl.examify.Examify.user.roles.RoleRepository;
 
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -66,10 +65,10 @@ public class DataLoader implements ApplicationRunner {
 
         List<Privilege> adminPrivileges = Arrays.asList(
                 readPrivilege, writePrivilege);
-        createRoleIfNotFound("ROLE_LECTURER", adminPrivileges);
-        createRoleIfNotFound("ROLE_STUDENT", adminPrivileges);
+        createRoleIfNotFound("LECTURER", adminPrivileges);
+        createRoleIfNotFound("STUDENT", adminPrivileges);
 
-        Role lecturerRole = roleRepository.findByName("ROLE_STUDENT");
+        Role lecturerRole = roleRepository.findByName("STUDENT");
         User student = new User();
         student.setFirstName("student");
         student.setLastName("student");
@@ -80,7 +79,7 @@ public class DataLoader implements ApplicationRunner {
         userRepository.save(student);
 
 
-        Role studentRole = roleRepository.findByName("ROLE_LECTURER");
+        Role studentRole = roleRepository.findByName("LECTURER");
         User lecturer = new User();
         lecturer.setFirstName("lecturer");
         lecturer.setLastName("lecturer");

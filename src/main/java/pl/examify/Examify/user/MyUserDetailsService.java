@@ -1,7 +1,5 @@
 package pl.examify.Examify.user;
 
-import jakarta.transaction.Transactional;
-import org.springframework.context.MessageSource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +10,7 @@ import pl.examify.Examify.user.roles.Privilege;
 import pl.examify.Examify.user.roles.Role;
 import pl.examify.Examify.user.roles.RoleRepository;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

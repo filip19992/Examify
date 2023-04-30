@@ -1,8 +1,8 @@
 package pl.examify.Examify.user.roles;
 
-import jakarta.persistence.*;
 import pl.examify.Examify.user.User;
 
+import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
