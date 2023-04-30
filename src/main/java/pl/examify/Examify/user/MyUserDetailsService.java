@@ -46,8 +46,7 @@ public class MyUserDetailsService implements UserDetailsService {
                 true, getAuthorities(user.getRoles()));
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities(
-            Collection<Role> roles) {
+    private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
 
         return getGrantedAuthorities(getPrivileges(roles));
     }

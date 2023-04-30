@@ -21,7 +21,7 @@ public class TemplateController {
 
     @GetMapping("/")
     public ResponseEntity<String> main() {
-        Resource resource = resourceLoader.getResource("classpath:/static/main.html");
+        Resource resource = getMainPage();
         try {
             String content = new String(resource.getInputStream().readAllBytes());
             return ResponseEntity.ok(content);
@@ -29,15 +29,24 @@ public class TemplateController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("/exam")
     public ResponseEntity<String> exam(HttpServletRequest request) {
         String name = request.getUserPrincipal().getName();
-        Resource resource = resourceLoader.getResource("classpath:/static/exam.html");
+        Resource resource = getExamPage();
         try {
             String content = new String(resource.getInputStream().readAllBytes());
             return ResponseEntity.ok(content);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private Resource getExamPage() {
+        return resourceLoader.getResource("classpath:/static/exam.html");
+    }
+
+    private Resource getMainPage() {
+        return resourceLoader.getResource("classpath:/static/main.html");
     }
 }

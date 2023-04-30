@@ -1,5 +1,6 @@
 package pl.examify.Examify.config;
 
+import lombok.AllArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class DataLoader implements ApplicationRunner {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
@@ -29,45 +31,15 @@ public class DataLoader implements ApplicationRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public DataLoader(QuestionRepository questionRepository, AnswerRepository answerRepository, RoleRepository roleRepository, PrivilegeRepository privilegeRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.questionRepository = questionRepository;
-        this.answerRepository = answerRepository;
-        this.roleRepository = roleRepository;
-        this.privilegeRepository = privilegeRepository;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public void run(ApplicationArguments args) {
+        loadQuestionsAndAnswers();
+
+        loadPrivilegesAndRoles();
+
+        loadUsers();
     }
 
-    public void run(ApplicationArguments args) {
-        Question firstQuestion = questionRepository.save(new Question(1, "2 plus 2 to"));
-        Question secoundQuestion = questionRepository.save(new Question(2, "5 minus 3 to"));
-        Question thirdQuestion = questionRepository.save(new Question(3, "2 razy 5 to"));
-
-        answerRepository.save(new Answer(1, firstQuestion, "cztery", "Y"));
-        answerRepository.save(new Answer(2, firstQuestion, "jeden", "N"));
-        answerRepository.save(new Answer(3, firstQuestion, "zero", "N"));
-        answerRepository.save(new Answer(4, firstQuestion, "trzy", "N"));
-
-        answerRepository.save(new Answer(5, secoundQuestion, "cztery", "N"));
-        answerRepository.save(new Answer(6, secoundQuestion, "jeden", "N"));
-        answerRepository.save(new Answer(7, secoundQuestion, "dwa", "Y"));
-        answerRepository.save(new Answer(8, secoundQuestion, "trzy", "N"));
-
-        answerRepository.save(new Answer(9, thirdQuestion, "cztery", "N"));
-        answerRepository.save(new Answer(10, thirdQuestion, "dziesięć", "Y"));
-        answerRepository.save(new Answer(11, thirdQuestion, "zero", "N"));
-        answerRepository.save(new Answer(12, thirdQuestion, "trzy", "N"));
-
-        Privilege readPrivilege
-                = createPrivilegeIfNotFound("READ_PRIVILEGE");
-        Privilege writePrivilege
-                = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
-
-        List<Privilege> adminPrivileges = Arrays.asList(
-                readPrivilege, writePrivilege);
-        createRoleIfNotFound("ROLE_LECTURER", adminPrivileges);
-        createRoleIfNotFound("ROLE_STUDENT", adminPrivileges);
-
+    private void loadUsers() {
         Role studentRole = roleRepository.findByName("ROLE_STUDENT");
         User student = new User();
         student.setFirstName("student");
@@ -88,6 +60,39 @@ public class DataLoader implements ApplicationRunner {
         lecturer.setRoles(Arrays.asList(lecturerRole));
         lecturer.setEnabled(true);
         userRepository.save(lecturer);
+    }
+
+    private void loadPrivilegesAndRoles() {
+        Privilege readPrivilege
+                = createPrivilegeIfNotFound("READ_PRIVILEGE");
+        Privilege writePrivilege
+                = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
+
+        List<Privilege> adminPrivileges = Arrays.asList(
+                readPrivilege, writePrivilege);
+        createRoleIfNotFound("ROLE_LECTURER", adminPrivileges);
+        createRoleIfNotFound("ROLE_STUDENT", adminPrivileges);
+    }
+
+    private void loadQuestionsAndAnswers() {
+        Question firstQuestion = questionRepository.save(new Question(1, "2 plus 2 to"));
+        Question secoundQuestion = questionRepository.save(new Question(2, "5 minus 3 to"));
+        Question thirdQuestion = questionRepository.save(new Question(3, "2 razy 5 to"));
+
+        answerRepository.save(new Answer(1, firstQuestion, "cztery", "Y"));
+        answerRepository.save(new Answer(2, firstQuestion, "jeden", "N"));
+        answerRepository.save(new Answer(3, firstQuestion, "zero", "N"));
+        answerRepository.save(new Answer(4, firstQuestion, "trzy", "N"));
+
+        answerRepository.save(new Answer(5, secoundQuestion, "cztery", "N"));
+        answerRepository.save(new Answer(6, secoundQuestion, "jeden", "N"));
+        answerRepository.save(new Answer(7, secoundQuestion, "dwa", "Y"));
+        answerRepository.save(new Answer(8, secoundQuestion, "trzy", "N"));
+
+        answerRepository.save(new Answer(9, thirdQuestion, "cztery", "N"));
+        answerRepository.save(new Answer(10, thirdQuestion, "dziesięć", "Y"));
+        answerRepository.save(new Answer(11, thirdQuestion, "zero", "N"));
+        answerRepository.save(new Answer(12, thirdQuestion, "trzy", "N"));
     }
 
     @Transactional
