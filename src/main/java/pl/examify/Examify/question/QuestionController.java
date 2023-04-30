@@ -11,15 +11,17 @@ import java.util.Optional;
 public class QuestionController {
 
     private final QuestionRepository questionRepository;
+    private final QuestionService questionService;
 
-    public QuestionController(QuestionRepository questionRepository) {
+    public QuestionController(QuestionRepository questionRepository, QuestionService questionService) {
         this.questionRepository = questionRepository;
+        this.questionService = questionService;
     }
 
     @GetMapping("/questions")
-    public ResponseEntity<List<Question>> getEmployees() {
+    public ResponseEntity<List<QuestionAnswersDTO>> getQuestions() {
         try {
-            return new ResponseEntity<>(questionRepository.findAll(), HttpStatus.OK);
+            return new ResponseEntity<>(questionService.findAll(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
