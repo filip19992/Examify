@@ -3,85 +3,34 @@ package pl.examify.Examify.question;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.examify.Examify.answer.Answer;
+import pl.examify.Examify.answer.AnswerDTO;
+import pl.examify.Examify.answer.AnswerRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 public class QuestionController {
+    private final QuestionService questionService;
 
-    private final QuestionRepository questionRepository;
-
-    public QuestionController(QuestionRepository questionRepository) {
-        this.questionRepository = questionRepository;
+    public QuestionController(QuestionService questionService) {
+        this.questionService = questionService;
     }
 
     @GetMapping("/questions")
-    public ResponseEntity<List<Question>> getEmployees() {
+    public ResponseEntity<List<QuestionAnswersDTO>> getQuestions() {
         try {
-            return new ResponseEntity<>(questionRepository.findAll(), HttpStatus.OK);
+            return new ResponseEntity<>(questionService.findAll(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    @GetMapping("/question/{id}")
-    public ResponseEntity<Question> getQuestionById(@PathVariable("id") long id) {
-        try {
-            Question empObj = getQuestionBy(id);
-
-            if (empObj != null) {
-                return new ResponseEntity<>(empObj, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
     }
 
     @PostMapping("/question")
-    public ResponseEntity<Question> addQuestion(@RequestBody QuestionDTO question) {
-        Question newQuestion = questionRepository
-                .save(Question.builder()
-                        .content(question.getContent())
-                        .build());
-        return new ResponseEntity<>(newQuestion, HttpStatus.OK);
-    }
+    public ResponseEntity<Question> addQuestion(@RequestBody QuestionAnswersDTO questionAnswersDTO) {
+        Question question = questionService.addQuestion(questionAnswersDTO);
 
-    @DeleteMapping("/question/{id}")
-    public ResponseEntity<HttpStatus> deleteQuestionById(@PathVariable("id") long id) {
-        try {
-            Question question = getQuestionBy(id);
-
-            if (question != null) {
-                questionRepository.deleteById(id);
-                return new ResponseEntity<>(HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @DeleteMapping("/questions")
-    public ResponseEntity<HttpStatus> deleteAllQuestions() {
-        try {
-            questionRepository.deleteAll();
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
-    private Question getQuestionBy(long id) {
-        Optional<Question> empObj = questionRepository.findById(id);
-
-        return empObj.orElse(null);
+        return new ResponseEntity<>(question, HttpStatus.OK);
     }
 }
