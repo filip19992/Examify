@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=chrome">
-    <meta name="viewport" content="width=device-width", initial-scale="1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Examify</title>
     <style>
+    body{
+      margin: 0;
+    }
     header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         background-color: #fff;
         color: #fff;
-        padding: 20px;
+        padding: 40px;
 
       }
 
@@ -24,44 +27,83 @@
         background-size: cover;
         background-position: center;
         margin-top: 10px;
+
       }
 
       .header-left {
         display: flex;
         align-items: center;
         justify-content: flex-start;
+
       }
 
       .header-left a {
         margin-right: 20px;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        color: black;
       }
 
       .column2 {
         text-align: center;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+
       }
 
       .photo {
         width: 100%;
         height: 60vh;
+        margin-bottom: 0;
       }
 
       .row {
         display: flex;
       }
       .column {
-        flex: 50%;
+        flex: 45%;
+
       }
 
-      section {
-        border-top: black solid;
-        background-origin: padding-box;
+      .column img {
+        margin-bottom: 0;
+      }
+
+      footer {
+        height: 20vh;
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        margin-top: 100px;
+        flex-direction: column;
+        background-color: #fff;
+        padding: 20px;
+        font-size: 10px;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+      }
+
+      footer h1 {
+      font-size: 13px;
+      }
+
+      ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      li {
+        margin-bottom: 10px;
       }
 
   </style>
 </head>
 <body>
 <header>
-    <div class="header-photo" style="background-image: url('../Content/Photos/Examify.png')"></div>
+    <div class="header-photo" style="background-image: url('Photos/Examify.png')"></div>
     <div class="header-left">
         <a href="main.html">STRONA GŁÓWNA</a>
         <a href="exam.html">EGZAMINY</a>
@@ -71,10 +113,19 @@
 <section>
     <div class="row">
         <div class="column">
-            <img class="photo" src="../Content/Photos/KLASA.png" alt="Photo">
+            <img class="photo" src="Photos/3757762.jpg" alt="Photo">
         </div>
         <div class="column column2">
-            <p>Examify - witamy!</p>
+            <p style="font-size: 55px; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">Examify - witamy!</p>
+        </div>
+    </div>
 </section>
+<footer>
+    <h1>Examify</h1>
+    <ul>
+        <li><a href="mailto:info@examify.com" style="color: black">info@pugcorn.com</a></li>
+    </ul>
+    <p>@2023</p>
+</footer>
 </body>
 </html>

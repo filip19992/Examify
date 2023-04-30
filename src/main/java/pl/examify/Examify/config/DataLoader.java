@@ -65,27 +65,27 @@ public class DataLoader implements ApplicationRunner {
 
         List<Privilege> adminPrivileges = Arrays.asList(
                 readPrivilege, writePrivilege);
-        createRoleIfNotFound("LECTURER", adminPrivileges);
-        createRoleIfNotFound("STUDENT", adminPrivileges);
+        createRoleIfNotFound("ROLE_LECTURER", adminPrivileges);
+        createRoleIfNotFound("ROLE_STUDENT", adminPrivileges);
 
-        Role lecturerRole = roleRepository.findByName("STUDENT");
+        Role studentRole = roleRepository.findByName("ROLE_STUDENT");
         User student = new User();
         student.setFirstName("student");
         student.setLastName("student");
         student.setPassword(passwordEncoder.encode("student"));
         student.setEmail("student@student.com");
-        student.setRoles(Arrays.asList(lecturerRole));
+        student.setRoles(Arrays.asList(studentRole));
         student.setEnabled(true);
         userRepository.save(student);
 
 
-        Role studentRole = roleRepository.findByName("LECTURER");
+        Role lecturerRole = roleRepository.findByName("ROLE_LECTURER");
         User lecturer = new User();
         lecturer.setFirstName("lecturer");
         lecturer.setLastName("lecturer");
         lecturer.setPassword(passwordEncoder.encode("lecturer"));
         lecturer.setEmail("lecturer@lecturer.com");
-        lecturer.setRoles(Arrays.asList(studentRole));
+        lecturer.setRoles(Arrays.asList(lecturerRole));
         lecturer.setEnabled(true);
         userRepository.save(lecturer);
     }

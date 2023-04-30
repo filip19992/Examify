@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 public class TemplateController {
     private final ResourceLoader resourceLoader;
@@ -28,7 +30,8 @@ public class TemplateController {
         }
     }
     @GetMapping("/exam")
-    public ResponseEntity<String> exam() {
+    public ResponseEntity<String> exam(HttpServletRequest request) {
+        String name = request.getUserPrincipal().getName();
         Resource resource = resourceLoader.getResource("classpath:/static/exam.html");
         try {
             String content = new String(resource.getInputStream().readAllBytes());
