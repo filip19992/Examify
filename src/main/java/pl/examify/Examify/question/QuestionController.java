@@ -3,6 +3,9 @@ package pl.examify.Examify.question;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.examify.Examify.answer.Answer;
+import pl.examify.Examify.answer.AnswerDTO;
+import pl.examify.Examify.answer.AnswerRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,10 +15,12 @@ public class QuestionController {
 
     private final QuestionRepository questionRepository;
     private final QuestionService questionService;
+    private final AnswerRepository answerRepository;
 
-    public QuestionController(QuestionRepository questionRepository, QuestionService questionService) {
+    public QuestionController(QuestionRepository questionRepository, QuestionService questionService, AnswerRepository answerRepository) {
         this.questionRepository = questionRepository;
         this.questionService = questionService;
+        this.answerRepository = answerRepository;
     }
 
     @GetMapping("/questions")
@@ -27,29 +32,17 @@ public class QuestionController {
         }
     }
 
-    @GetMapping("/question/{id}")
-    public ResponseEntity<Question> getQuestionById(@PathVariable("id") long id) {
-        try {
-            Question empObj = getQuestionBy(id);
-
-            if (empObj != null) {
-                return new ResponseEntity<>(empObj, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
     @PostMapping("/question")
-    public ResponseEntity<Question> addQuestion(@RequestBody QuestionDTO question) {
+    public ResponseEntity<Question> addQuestion(@RequestBody QuestionAnswersDTO questionAnswersDTO) {
         Question newQuestion = questionRepository
                 .save(Question.builder()
-                        .content(question.getContent())
+                        .content(questionAnswersDTO.getQuestion().getContent())
                         .build());
+
+        List<AnswerDTO> answers = questionAnswersDTO.getAnswers();
+
+        answers.forEach(answer -> answerRepository.save(new Answer(newQuestion, answer.getContent(), answer.getIsGoodAnswer())));
+
         return new ResponseEntity<>(newQuestion, HttpStatus.OK);
     }
 

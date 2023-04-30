@@ -25,4 +25,10 @@ public class Answer {
     private String content;
     @Column(length = 1)
     private String isGoodAnswer;
+
+    public Answer(Question question, String content, String isGoodAnswer) {
+        this.question = question;
+        this.content = content;
+        this.isGoodAnswer = isGoodAnswer;
+    }
 }
