@@ -1,11 +1,12 @@
 package pl.examify.Examify.answer;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.examify.Examify.question.Question;
+
+import javax.persistence.*;
 
 @Data
 @AllArgsConstructor
