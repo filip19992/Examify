@@ -26,28 +26,16 @@ public class ExamService {
     }
 
     public List<QuestionAnswersDTO> findExamByUserId(Long userId) {
-        var list = new ArrayList<QuestionAnswersDTO>();
-        long examId = 0;
-
-        for(Exam exam : examRepository.findAll()) {
-            for(User user : exam.getUsers()) {
-                if (user.getId().equals(userId)) {
-                    examId = exam.getId();
-                    break;
-                }
-            }
-        }
-
-        if(examId != 0) {
-            List<Question> questions = questionRepository.findAllByExamId(examId);
-
-            return questions
-                    .stream()
-                    .map(c -> new QuestionAnswersDTO(c, getAnswersByQuestionId(c)))
-                    .collect(Collectors.toList());
-        } else {
-            return List.of();
-        }
+        return examRepository.findAll().stream()
+                .filter(exam -> exam.getUsers().stream().anyMatch(user -> user.getId().equals(userId)))
+                .findFirst()
+                .map(exam -> {
+                    List<Question> questions = questionRepository.findAllByExamId(exam.getId());
+                    return questions.stream()
+                            .map(question -> new QuestionAnswersDTO(question, getAnswersByQuestionId(question)))
+                            .collect(Collectors.toList());
+                })
+                .orElse(List.of());
     }
 
     private List<AnswerDTO> getAnswersByQuestionId(Question c) {
