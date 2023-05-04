@@ -37,11 +37,16 @@ public class ExamController {
     }
 
     @PostMapping("/exam")
-    public ResponseEntity<String> attemptExam(@RequestBody ExamAttemptDTO examAttempt) {
+    public ResponseEntity<Integer> attemptExam(@RequestBody ExamAttemptDTO examAttempt, HttpServletRequest request) {
+        String name = request.getUserPrincipal().getName();
+
+
         List<QuestionWithAnswer> questionWithAnswers = examAttempt.getQuestionsWithAnswers();
 
-        examService.attemptExam(questionWithAnswers);
-
-        return null;
+        try {
+            return new ResponseEntity<>(examService.attemptExam(questionWithAnswers, name), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
