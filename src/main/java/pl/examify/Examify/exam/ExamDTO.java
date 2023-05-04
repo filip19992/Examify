@@ -9,4 +9,8 @@ public class ExamDTO {
     public List<String> getStudentUsernames() {
         return studentUsernames;
     }
+
+    public List<QuestionToCreateExamDTO> getQuestions() {
+        return questions;
+    }
 }
