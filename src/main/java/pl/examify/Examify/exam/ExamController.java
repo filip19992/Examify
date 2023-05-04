@@ -45,4 +45,12 @@ public class ExamController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PostMapping("/exam/create")
+    public ResponseEntity<Long> createExam(@RequestBody ExamDTO examDTO) {
+        try {
+            return new ResponseEntity<>(examService.createExam(examDTO), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

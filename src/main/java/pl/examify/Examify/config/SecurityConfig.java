@@ -34,6 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/exam").hasRole("STUDENT")
                 .antMatchers("/").authenticated()
+                //for testing phase only
+                .antMatchers("/exam/create").permitAll()
                 .and()
                 .formLogin()
                 .loginProcessingUrl("/login")

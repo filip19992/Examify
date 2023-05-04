@@ -1,10 +1,11 @@
 package pl.examify.Examify.exam;
 
 import org.springframework.stereotype.Service;
-import pl.examify.Examify.answer.Answer;
 import pl.examify.Examify.answer.AnswerDTO;
 import pl.examify.Examify.answer.AnswerRepository;
 import pl.examify.Examify.question.*;
+import pl.examify.Examify.user.User;
+import pl.examify.Examify.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +17,14 @@ public class ExamService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final ExamAttemptRepository examAttemptRepository;
+    private final UserRepository userRepository;
 
-    public ExamService(ExamRepository examRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, ExamAttemptRepository examAttemptRepository) {
+    public ExamService(ExamRepository examRepository, QuestionRepository questionRepository, AnswerRepository answerRepository, ExamAttemptRepository examAttemptRepository, UserRepository userRepository) {
         this.examRepository = examRepository;
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.examAttemptRepository = examAttemptRepository;
+        this.userRepository = userRepository;
     }
 
     public List<QuestionAnswersDTO> findExamByUserId(Long userId) {
@@ -61,5 +64,17 @@ public class ExamService {
         answersByQuestionId.forEach(answer -> answerDTOS.add(new AnswerDTO(answer.getId(), answer.getContent())));
 
         return answerDTOS;
+    }
+
+    public Long createExam(ExamDTO examDTO) {
+        var students = new ArrayList<User>();
+
+        for(var username : examDTO.getStudentUsernames()) {
+            var student = userRepository.findByEmail(username);
+            students.add(student);
+        }
+
+        var savedExam = examRepository.save(new Exam(students));
+        return 0L;
     }
 }
