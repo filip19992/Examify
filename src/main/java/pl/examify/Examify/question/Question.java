@@ -19,7 +19,6 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-
     @Column(name = "content")
     private String content;
 

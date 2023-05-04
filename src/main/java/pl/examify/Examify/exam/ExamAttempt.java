@@ -11,10 +11,8 @@ public class ExamAttempt {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-
     @Column(name = "student_name")
     private String studentUsername;
-
     @Column(name = "result")
     private double result;
 

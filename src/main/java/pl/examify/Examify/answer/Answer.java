@@ -21,7 +21,6 @@ public class Answer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
-
     @Column
     private String content;
     @Column(length = 1)

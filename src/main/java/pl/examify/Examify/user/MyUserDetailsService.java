@@ -52,22 +52,21 @@ public class MyUserDetailsService implements UserDetailsService {
     }
 
     private List<String> getPrivileges(Collection<Role> roles) {
-
-        List<String> privileges = new ArrayList<>();
-        List<Privilege> collection = new ArrayList<>();
-        for (Role role : roles) {
+        var privileges = new ArrayList<String>();
+        var collection = new ArrayList<Privilege>();
+        for (var role : roles) {
             privileges.add(role.getName());
             collection.addAll(role.getPrivileges());
         }
-        for (Privilege item : collection) {
+        for (var item : collection) {
             privileges.add(item.getName());
         }
         return privileges;
     }
 
     private List<GrantedAuthority> getGrantedAuthorities(List<String> privileges) {
-        List<GrantedAuthority> authorities = new ArrayList<>();
-        for (String privilege : privileges) {
+        var authorities = new ArrayList<GrantedAuthority>();
+        for (var privilege : privileges) {
             authorities.add(new SimpleGrantedAuthority(privilege));
         }
         return authorities;

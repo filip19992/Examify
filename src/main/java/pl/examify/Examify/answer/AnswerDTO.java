@@ -8,7 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class AnswerDTO {
-
     private Long answerId;
     private String content;
 }

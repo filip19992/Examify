@@ -26,7 +26,7 @@ public class ExamController {
     @GetMapping("/questions")
     public ResponseEntity<List<QuestionAnswersDTO>> getExam(HttpServletRequest request) {
         try {
-            String name = request.getUserPrincipal().getName();
+            var name = request.getUserPrincipal().getName();
 
             var userId = userRepository.findByEmail(name).getId();
             return new ResponseEntity<>(examService.findExamByUserId(userId), HttpStatus.OK);
@@ -37,9 +37,7 @@ public class ExamController {
 
     @PostMapping("/exam")
     public ResponseEntity<Long> attemptExam(@RequestBody List<QuestionWithAnswer> questionWithAnswers, HttpServletRequest request) {
-        String name = request.getUserPrincipal().getName();
-
-
+        var name = request.getUserPrincipal().getName();
 
         try {
             return new ResponseEntity<>(examService.attemptExam(questionWithAnswers, name), HttpStatus.OK);

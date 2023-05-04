@@ -16,7 +16,6 @@ public class Exam {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-
     @ManyToMany
     @JoinTable(
             name = "exam_users",

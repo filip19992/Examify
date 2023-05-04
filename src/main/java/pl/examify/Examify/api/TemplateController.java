@@ -21,7 +21,7 @@ public class TemplateController {
 
     @GetMapping("/")
     public ResponseEntity<String> main() {
-        Resource resource = getMainPage();
+        var resource = getMainPage();
         try {
             String content = new String(resource.getInputStream().readAllBytes());
             return ResponseEntity.ok(content);
@@ -32,7 +32,7 @@ public class TemplateController {
 
     @GetMapping("/exam")
     public ResponseEntity<String> exam(HttpServletRequest request) {
-        Resource resource = getExamPage();
+        var resource = getExamPage();
         try {
             String content = new String(resource.getInputStream().readAllBytes());
             return ResponseEntity.ok(content);

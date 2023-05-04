@@ -45,7 +45,7 @@ public class ExamService {
                         .orElse(0L))
                 .sum();
 
-        double result = (double) gatheredPoints / maxPoints;
+        var result = (double) gatheredPoints / maxPoints;
 
         examAttemptRepository.save(new ExamAttempt(name, result));
 
@@ -55,8 +55,8 @@ public class ExamService {
 
 
     private List<AnswerDTO> getAnswersByQuestionId(Question c) {
-        List<Answer> answersByQuestionId = answerRepository.findAnswersByQuestionId(c.getId());
-        List<AnswerDTO> answerDTOS = new ArrayList<>();
+        var answersByQuestionId = answerRepository.findAnswersByQuestionId(c.getId());
+        var answerDTOS = new ArrayList<AnswerDTO>();
 
         answersByQuestionId.forEach(answer -> answerDTOS.add(new AnswerDTO(answer.getId(), answer.getContent())));
 
