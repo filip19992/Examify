@@ -22,6 +22,9 @@ public class Question {
     @Column(name = "content")
     private String content;
 
+    @Column(name = "exam_id")
+    private long examId;
+
     public Question(String content) {
         this.content = content;
     }

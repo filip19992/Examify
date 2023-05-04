@@ -32,7 +32,6 @@ public class TemplateController {
 
     @GetMapping("/exam")
     public ResponseEntity<String> exam(HttpServletRequest request) {
-        String name = request.getUserPrincipal().getName();
         Resource resource = getExamPage();
         try {
             String content = new String(resource.getInputStream().readAllBytes());

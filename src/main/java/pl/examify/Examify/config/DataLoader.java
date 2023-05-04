@@ -7,6 +7,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import pl.examify.Examify.answer.Answer;
 import pl.examify.Examify.answer.AnswerRepository;
+import pl.examify.Examify.exam.Exam;
+import pl.examify.Examify.exam.ExamRepository;
 import pl.examify.Examify.question.Question;
 import pl.examify.Examify.question.QuestionRepository;
 import pl.examify.Examify.user.User;
@@ -29,6 +31,7 @@ public class DataLoader implements ApplicationRunner {
     private final RoleRepository roleRepository;
     private final PrivilegeRepository privilegeRepository;
     private final UserRepository userRepository;
+    private final ExamRepository examRepository;
     private final PasswordEncoder passwordEncoder;
 
     public void run(ApplicationArguments args) {
@@ -60,6 +63,8 @@ public class DataLoader implements ApplicationRunner {
         lecturer.setRoles(Arrays.asList(lecturerRole));
         lecturer.setEnabled(true);
         userRepository.save(lecturer);
+
+        examRepository.save(new Exam(1, List.of(student)));
     }
 
     private void loadPrivilegesAndRoles() {
@@ -75,9 +80,9 @@ public class DataLoader implements ApplicationRunner {
     }
 
     private void loadQuestionsAndAnswers() {
-        Question firstQuestion = questionRepository.save(new Question(1, "2 plus 2 to"));
-        Question secoundQuestion = questionRepository.save(new Question(2, "5 minus 3 to"));
-        Question thirdQuestion = questionRepository.save(new Question(3, "2 razy 5 to"));
+        Question firstQuestion = questionRepository.save(new Question(1, "2 plus 2 to", 19));
+        Question secoundQuestion = questionRepository.save(new Question(2, "5 minus 3 to", 19));
+        Question thirdQuestion = questionRepository.save(new Question(3, "2 razy 5 to", 19));
 
         answerRepository.save(new Answer(1, firstQuestion, "cztery", "Y"));
         answerRepository.save(new Answer(2, firstQuestion, "jeden", "N"));
@@ -93,6 +98,8 @@ public class DataLoader implements ApplicationRunner {
         answerRepository.save(new Answer(10, thirdQuestion, "dziesięć", "Y"));
         answerRepository.save(new Answer(11, thirdQuestion, "zero", "N"));
         answerRepository.save(new Answer(12, thirdQuestion, "trzy", "N"));
+
+
     }
 
     @Transactional
