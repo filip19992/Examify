@@ -7,10 +7,11 @@ import pl.examify.Examify.answer.AnswerRepository;
 import pl.examify.Examify.question.Question;
 import pl.examify.Examify.question.QuestionAnswersDTO;
 import pl.examify.Examify.question.QuestionRepository;
-import pl.examify.Examify.user.User;
+import pl.examify.Examify.question.QuestionWithAnswer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,8 +43,15 @@ public class ExamService {
         List<Answer> answersByQuestionId = answerRepository.findAnswersByQuestionId(c.getId());
         List<AnswerDTO> answerDTOS = new ArrayList<>();
 
-        answersByQuestionId.forEach(answer -> answerDTOS.add(new AnswerDTO(answer.getContent())));
+        answersByQuestionId.forEach(answer -> answerDTOS.add(new AnswerDTO(answer.getId(), answer.getContent())));
 
         return answerDTOS;
+    }
+
+    public void attemptExam(List<QuestionWithAnswer> questionWithAnswer) {
+        for(QuestionWithAnswer question : questionWithAnswer) {
+            Answer answer = answerRepository.findById(question.getAnswerId()).get();
+            //TODO:point counting, entity for exam results. It should contain userId and result of exam
+        }
     }
 }
