@@ -39,19 +39,19 @@ public class ExamService {
 
     public long attemptExam(List<QuestionWithAnswer> questionWithAnswers, String name) {
         long maxPoints = questionWithAnswers.size();
-        long gatheredPoints = 0L;
-        for(QuestionWithAnswer question : questionWithAnswers) {
-            Answer answer = answerRepository.findById(question.getAnswerId()).get();
-            if(answer.getIsGoodAnswer().equals("Y"))
-                gatheredPoints++;
-        }
+        long gatheredPoints = questionWithAnswers.stream()
+                .mapToLong(q -> answerRepository.findById(q.getAnswerId())
+                        .map(answer -> answer.getIsGoodAnswer().equals("Y") ? 1L : 0L)
+                        .orElse(0L))
+                .sum();
 
-        double result = (double)gatheredPoints/maxPoints;
+        double result = (double) gatheredPoints / maxPoints;
 
         examAttemptRepository.save(new ExamAttempt(name, result));
 
-        return Math.round(result*100); // round the result to the nearest integer percentage
+        return Math.round(result * 100);
     }
+
 
 
     private List<AnswerDTO> getAnswersByQuestionId(Question c) {
