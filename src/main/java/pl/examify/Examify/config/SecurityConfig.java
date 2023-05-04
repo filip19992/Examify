@@ -70,7 +70,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private String generateAccessToken(Authentication authentication) {
-        // Use a JWT library to generate a token based on the authenticated user's details
         return "";
     }
 
