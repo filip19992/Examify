@@ -7,6 +7,7 @@ import pl.examify.Examify.user.roles.Role;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "exams")
@@ -26,6 +27,10 @@ public class Exam {
     private Collection<User> users;
 
     public Exam() {
+    }
+
+    public Exam(Collection<User> users) {
+        this.users = users;
     }
 
     public long getId() {

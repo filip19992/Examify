@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.examify.Examify.exam.Exam;
 
 import javax.persistence.*;
 
@@ -22,8 +23,9 @@ public class Question {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "exam_id")
-    private long examId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exam_id", nullable = false)
+    private Exam exam;
 
     public Question(String content) {
         this.content = content;

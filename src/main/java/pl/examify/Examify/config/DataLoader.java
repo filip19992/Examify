@@ -35,8 +35,6 @@ public class DataLoader implements ApplicationRunner {
     private final PasswordEncoder passwordEncoder;
 
     public void run(ApplicationArguments args) {
-        loadQuestionsAndAnswers();
-
         loadPrivilegesAndRoles();
 
         loadUsers();
@@ -64,25 +62,11 @@ public class DataLoader implements ApplicationRunner {
         lecturer.setEnabled(true);
         userRepository.save(lecturer);
 
-        examRepository.save(new Exam(1, List.of(student)));
-    }
+        Exam exam = examRepository.save(new Exam(List.of(student)));
 
-    private void loadPrivilegesAndRoles() {
-        Privilege readPrivilege
-                = createPrivilegeIfNotFound("READ_PRIVILEGE");
-        Privilege writePrivilege
-                = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
-
-        List<Privilege> adminPrivileges = Arrays.asList(
-                readPrivilege, writePrivilege);
-        createRoleIfNotFound("ROLE_LECTURER", adminPrivileges);
-        createRoleIfNotFound("ROLE_STUDENT", adminPrivileges);
-    }
-
-    private void loadQuestionsAndAnswers() {
-        Question firstQuestion = questionRepository.save(new Question(1, "2 plus 2 to", 19));
-        Question secoundQuestion = questionRepository.save(new Question(2, "5 minus 3 to", 19));
-        Question thirdQuestion = questionRepository.save(new Question(3, "2 razy 5 to", 19));
+        Question firstQuestion = questionRepository.save(new Question(1, "2 plus 2 to", exam));
+        Question secoundQuestion = questionRepository.save(new Question(2, "5 minus 3 to", exam));
+        Question thirdQuestion = questionRepository.save(new Question(3, "2 razy 5 to", exam));
 
         answerRepository.save(new Answer(1, firstQuestion, "cztery", "Y"));
         answerRepository.save(new Answer(2, firstQuestion, "jeden", "N"));
@@ -98,8 +82,18 @@ public class DataLoader implements ApplicationRunner {
         answerRepository.save(new Answer(10, thirdQuestion, "dziesięć", "Y"));
         answerRepository.save(new Answer(11, thirdQuestion, "zero", "N"));
         answerRepository.save(new Answer(12, thirdQuestion, "trzy", "N"));
+    }
 
+    private void loadPrivilegesAndRoles() {
+        Privilege readPrivilege
+                = createPrivilegeIfNotFound("READ_PRIVILEGE");
+        Privilege writePrivilege
+                = createPrivilegeIfNotFound("WRITE_PRIVILEGE");
 
+        List<Privilege> adminPrivileges = Arrays.asList(
+                readPrivilege, writePrivilege);
+        createRoleIfNotFound("ROLE_LECTURER", adminPrivileges);
+        createRoleIfNotFound("ROLE_STUDENT", adminPrivileges);
     }
 
     @Transactional
