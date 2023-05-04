@@ -26,7 +26,8 @@ public class Question {
     @JoinColumn(name = "exam_id", nullable = false)
     private Exam exam;
 
-    public Question(String content) {
+    public Question(String content, Exam exam) {
         this.content = content;
+        this.exam = exam;
     }
 }

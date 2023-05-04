@@ -1,6 +1,7 @@
 package pl.examify.Examify.exam;
 
 import org.springframework.stereotype.Service;
+import pl.examify.Examify.answer.Answer;
 import pl.examify.Examify.answer.AnswerDTO;
 import pl.examify.Examify.answer.AnswerRepository;
 import pl.examify.Examify.question.*;
@@ -68,6 +69,7 @@ public class ExamService {
 
     public Long createExam(ExamDTO examDTO) {
         var students = new ArrayList<User>();
+        var questions = new ArrayList<Question>();
 
         for(var username : examDTO.getStudentUsernames()) {
             var student = userRepository.findByEmail(username);
@@ -75,6 +77,13 @@ public class ExamService {
         }
 
         var savedExam = examRepository.save(new Exam(students));
+
+        for(var question : examDTO.getQuestions()) {
+            Question savedQuestion = questionRepository.save(new Question(question.getQuestionContent(), savedExam));
+            for(var answer : question.getAnswerToCreateExamList()){
+                answerRepository.save(new Answer(savedQuestion, answer.getContent(), answer.getIsGoodAnswer()));
+            }
+        }
         return 0L;
     }
 }
