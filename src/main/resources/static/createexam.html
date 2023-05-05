@@ -13,6 +13,7 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
+            padding: 10px;
 		}
 		h1 {
 			color: #008080;
@@ -169,7 +170,6 @@
 				//isGoodAnswerInput.name = "isGoodAnswer" + numQuestions + "_" + i;
 				isGoodAnswerInput.className = "isGoodAnswer" + answerNumber;
 				form.appendChild(isGoodAnswerInput);
-				form.appendChild(document.createTextNode("Correct"));
 				form.appendChild(document.createElement("br"));
 			}
 			answerNumber++;
