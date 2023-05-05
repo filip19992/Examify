@@ -88,9 +88,11 @@
         to {
             transform: rotate(360deg);
         }
+
     }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         $(document).ready(function() {
             // Get questions from /questions
@@ -142,11 +144,26 @@
     </script>
 </head>
 <body>
+<div id="div1" style="font-family:  'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size:30px;">Time left: 20 minutes</div>
 <h1>Exam</h1>
 
 <!-- Button to retrieve questions with AJAX -->
 <button id="get-questions">Get Questions</button>
-
+<script type="text/javascript">
+  var ile = 1200;
+  var intervalHandler;
+  function stoper() {
+    hours = Math.floor(ile / 3600);
+    minutes = Math.floor(ile / 60) % 60;
+    sec = ile % 60;
+    document.getElementById('div1').innerHTML = 'Time left: ' + minutes + ' min ' + sec + ' sec';
+    ile--;
+  }
+  document.getElementById('get-questions').addEventListener('click', function() {
+    intervalHandler = setInterval(stoper, 1000);
+  });
+</script>
 <!-- Div to display questions and answers -->
 <div id="questions"></div>
 

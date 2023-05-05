@@ -4,7 +4,15 @@
   <title>Create Exam</title>
     <style>
 		body {
-			font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+			margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #fff;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
 		}
 		h1 {
 			color: #008080;
@@ -12,8 +20,7 @@
 			margin-top: 40px;
 		}
 		form {
-			max-width: 600px;
-			margin: 0 auto;
+			width: 35%;
 			padding: 20px;
 			background-color: #ffffff;
 			box-shadow: 0px 0px 10px #ccc;
@@ -63,12 +70,19 @@
 			margin-top: 20px;
 			gap: 20px;
 		}
+		#student , student1{
+		    justify-content: center;
+		    width: 500px;
+            text-align: center;
+            margin-top: 20px;
+		}
 		header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         background-color: #fff;
         color: #fff;
+        width:100%
       }
 
       .header-photo {
@@ -117,7 +131,7 @@
 			// create the JSON object
 			var exam = {
 				"questions": questions,
-				"studentUsernames": ["student@student.com"]
+				"studentUsernames": [document.getElementById("student").value]
 			};
 
 			// send the JSON object to the server
@@ -170,12 +184,15 @@
         <a href="/exam">EXAMS</a>
         <a href="/exam/create">CREATE EXAM</a>
         <a href="/login">LOGIN</a>
+        <a href="/api/logout">LOGOUT</a>
     </div>
 </header>
 <h1>Create Exam</h1>
 <form id="examForm">
-  <!-- Question inputs will be dynamically added here -->
 </form>
+<div id="student1">
+    <input type="text" id="student" placeholder="Enter students email">
+</div>
 <div class="buttons">
     <button type="button" onclick="addQuestion()">Add Question</button>
     <button type="button" onclick="createExam()">Create Exam</button>

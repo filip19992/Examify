@@ -12,9 +12,9 @@ public class UserController {
     @GetMapping("/getCurrentUser")
     public ResponseEntity<String> getCurrentUser(HttpServletRequest request) {
         try {
-            return new ResponseEntity<>("Zalgolowano jako: " + request.getUserPrincipal().getName(), HttpStatus.OK);
+            return new ResponseEntity<>( request.getUserPrincipal().getName(), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Nie zalogowano", HttpStatus.OK);
+            return new ResponseEntity<>( "",HttpStatus.OK);
         }
     }
 }

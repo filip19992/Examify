@@ -37,7 +37,7 @@
 
       }
 
-      .header-left a {
+      .header-left a,p {
         margin-right: 20px;
         font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         color: black;
@@ -100,17 +100,21 @@
       }
 
   </style>
+
 </head>
 <body>
 <header>
     <div class="header-photo" style="background-image: url('Photos/Examify.png')"></div>
     <div class="header-left">
+        <p>Current user: <span id="current-user"></span></p>
         <a href="">HOME PAGE</a>
         <a href="exam">EXAMS</a>
         <a href="exam/create">CREATE EXAM</a>
         <a href="login">LOGIN</a>
+        <a href="/api/logout">LOGOUT</a>
     </div>
 </header>
+
 <section>
     <div class="row">
         <div class="column">
@@ -129,4 +133,16 @@
     <p>@2023</p>
 </footer>
 </body>
+<script>
+        const currentUserElement = document.getElementById('current-user');
+
+            // Make a GET request to the "/getCurrentUser" endpoint
+            fetch('/getCurrentUser')
+        .then(response => response.text())
+        .then(data => {
+            // Set the returned value in the HTML element
+            currentUserElement.textContent = data;
+        })
+        .catch(error => console.error(error));
+    </script>
 </html>

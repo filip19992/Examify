@@ -33,10 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/exam").hasRole("STUDENT")
-                .antMatchers("/exam/create").permitAll()
-                .antMatchers("/").authenticated()
-                //for testing phase only
-                .antMatchers("/exam/create").permitAll()
+                .antMatchers("/exam/create").hasRole("LECTURER")
+                .antMatchers("/").permitAll()
                 .and()
                 .formLogin()
                 .loginProcessingUrl("/login")
@@ -50,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessHandler(new LogoutSuccessHandler() {
                     @Override
                     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        response.getWriter().write("{\"message\": \"Logout successful\"}");
+                        response.sendRedirect("/");
                     }
                 })
                 .and()
