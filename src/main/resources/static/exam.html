@@ -83,15 +83,51 @@ $(document).ready(function () {
 }
 
 body {
-    display: flex;
     margin: 0;
     height: 100vh;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
-    background-color: #efefef;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    background-color: #fff;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
 }
+
+header {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        color: #fff;
+        padding: 40px;
+        text-align: center;
+
+
+      }
+
+      .header-photo {
+        width: 70px;
+        height: 100px;
+        background-color: #fff;
+        background-size: cover;
+        background-position: center;
+        margin-top: 10px;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      .header-left a {
+        margin-right: 20px;
+        color: black;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+      }
 
 .exam-container {
     width: 600px;
@@ -99,6 +135,10 @@ body {
     background-color: #fff;
     box-shadow: 0 0 10px 2px rgba(120, 120, 120, 0.2);
     overflow: hidden;
+    margin-top: 20px;
+
+
+
 }
 
 .exam-header {
@@ -106,6 +146,7 @@ body {
     padding: 1rem;
     justify-content: space-between;
     align-items: center;
+
 }
 
 .exam-question {
@@ -113,11 +154,13 @@ body {
     padding: 0.1rem;
     font-weight: bold;
     font-size: 1.2rem;
+
 }
 
 .exam-body, .summary {
     padding: 0 2rem;
     margin-bottom: 2rem;
+
 }
 
 ul {
@@ -184,13 +227,21 @@ li.wrong-answer {
 
 li.correct-answer, li.wrong-answer {
     border-radius: 5px;
-    padding:  0.1rem;
+
 }
 
 </style>
 </head>
 <body>
-<header></header>
+<header>
+    <div class="header-photo" style="background-image: url('../Content/Photos/Examify.png')"></div>
+    <div class="header-left">
+        <a href="main.html">STRONA GŁÓWNA</a>
+        <a href="exams.html">EGZAMINY</a>
+        <a href="createexam.html">STWÓRZ EGZAMIN</a>
+        <a href="login.html">LOGOWANIE</a>
+    </div>
+</header>
 <div class="exam-container" id="exam">
     <div class="exam-header">
         <div id="progress">Pytanie 1 z 5</div>
@@ -226,6 +277,7 @@ class Exam {
         console.log("init app");
 
         this.progress = document.querySelector("#progress");
+       /* this.countDownInfo = document.querySelector("#count-down"); */
         this.questionHeading = document.getElementById("question-heading");
 
         this.answersList = document.querySelector("#answers-list");
@@ -247,7 +299,7 @@ class Exam {
             console.log("Brak pytań");
             return;
         }
-
+        // this.examMaxTime = jsonData.examMaxTime * 1000;
         this.id = jsonData.id;
         this.content = jsonData.content;
     }
