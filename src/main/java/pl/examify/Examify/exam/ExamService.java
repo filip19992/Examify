@@ -10,6 +10,7 @@ import pl.examify.Examify.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,24 +31,22 @@ public class ExamService {
 
     public List<QuestionAnswersDTO> findExamByUserId(Long userId) {
         return examRepository.findAll().stream()
-                .filter(exam -> exam.getUsers().stream().anyMatch(user -> user.getId().equals(userId)))
+                .filter(exam -> isExamForGivenUserId(userId, exam))
                 .findFirst()
-                .map(exam -> {
-                    List<Question> questions = questionRepository.findAllByExamId(exam.getId());
-                    return questions.stream()
-                            .map(question -> new QuestionAnswersDTO(new QuestionDTO(question.getId(), question.getContent()), getAnswersByQuestionId(question)))
-                            .collect(Collectors.toList());
-                })
+                .map(this::getQuestionAnswersDTOS)
                 .orElse(List.of());
+    }
+
+    private List<QuestionAnswersDTO> getQuestionAnswersDTOS(Exam exam) {
+        var questions = questionRepository.findAllByExamId(exam.getId());
+        return questions.stream()
+                .map(this::mapQuestionToQuestionDTO)
+                .collect(Collectors.toList());
     }
 
     public long attemptExam(List<QuestionWithAnswer> questionWithAnswers, String name) {
         long maxPoints = questionWithAnswers.size();
-        long gatheredPoints = questionWithAnswers.stream()
-                .mapToLong(q -> answerRepository.findById(q.getAnswerId())
-                        .map(answer -> answer.getIsGoodAnswer().equals("Y") ? 1L : 0L)
-                        .orElse(0L))
-                .sum();
+        long gatheredPoints = getPointsForCorrectAnswers(questionWithAnswers);
 
         var result = (double) gatheredPoints / maxPoints;
 
@@ -56,6 +55,42 @@ public class ExamService {
         return Math.round(result * 100);
     }
 
+    public void createExam(ExamDTO examDTO) {
+        var students = getUsersByEmails(examDTO);
+
+        var savedExam = examRepository.save(new Exam(students));
+
+        examDTO.getQuestions().forEach(question -> saveQuestionsAndAnswers(savedExam, question));
+    }
+
+    private void saveQuestionsAndAnswers(Exam savedExam, QuestionToCreateExamDTO question) {
+        var savedQuestion = questionRepository.save(new Question(question.getQuestionContent(), savedExam));
+
+        question.getAnswerToCreateExamList().forEach(answer -> saveAnswersForQuestion(savedQuestion, answer));
+    }
+
+    private void saveAnswersForQuestion(Question savedQuestion, AnswerToCreateExamDTO answer) {
+        answerRepository.save(new Answer(savedQuestion, answer.getContent(), answer.getIsGoodAnswer()));
+    }
+
+    private List<User> getUsersByEmails(ExamDTO examDTO) {
+        return examDTO.getStudentUsernames().stream()
+                .map(userRepository::findByEmail)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+    }
+
+    private QuestionAnswersDTO mapQuestionToQuestionDTO(Question question) {
+        return new QuestionAnswersDTO(new QuestionDTO(question.getId(), question.getContent()), getAnswersByQuestionId(question));
+    }
+
+    private long getPointsForCorrectAnswers(List<QuestionWithAnswer> questionWithAnswers) {
+        return questionWithAnswers.stream()
+                .mapToLong(q -> answerRepository.findById(q.getAnswerId())
+                        .map(answer -> answer.getIsGoodAnswer().equals("Y") ? 1L : 0L)
+                        .orElse(0L))
+                .sum();
+    }
 
 
     private List<AnswerDTO> getAnswersByQuestionId(Question c) {
@@ -67,23 +102,7 @@ public class ExamService {
         return answerDTOS;
     }
 
-    public Long createExam(ExamDTO examDTO) {
-        var students = new ArrayList<User>();
-        var questions = new ArrayList<Question>();
-
-        for(var username : examDTO.getStudentUsernames()) {
-            var student = userRepository.findByEmail(username);
-            students.add(student);
-        }
-
-        var savedExam = examRepository.save(new Exam(students));
-
-        for(var question : examDTO.getQuestions()) {
-            Question savedQuestion = questionRepository.save(new Question(question.getQuestionContent(), savedExam));
-            for(var answer : question.getAnswerToCreateExamList()){
-                answerRepository.save(new Answer(savedQuestion, answer.getContent(), answer.getIsGoodAnswer()));
-            }
-        }
-        return 0L;
+    private boolean isExamForGivenUserId(Long userId, Exam exam) {
+        return exam.getUsers().stream().anyMatch(user -> user.getId().equals(userId));
     }
 }

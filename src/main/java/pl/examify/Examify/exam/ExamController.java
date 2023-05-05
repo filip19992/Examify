@@ -28,7 +28,7 @@ public class ExamController {
         try {
             var name = request.getUserPrincipal().getName();
 
-            var userId = userRepository.findByEmail(name).getId();
+            var userId = userRepository.findByEmail(name).get().getId();
             return new ResponseEntity<>(examService.findExamByUserId(userId), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -46,11 +46,7 @@ public class ExamController {
         }
     }
     @PostMapping("/exam/create")
-    public ResponseEntity<Long> createExam(@RequestBody ExamDTO examDTO) {
-        try {
-            return new ResponseEntity<>(examService.createExam(examDTO), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public void createExam(@RequestBody ExamDTO examDTO) {
+        examService.createExam(examDTO);
     }
 }
