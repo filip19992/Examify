@@ -10,5 +10,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class QuestionDTO {
+    private long id;
     private String content;
 }

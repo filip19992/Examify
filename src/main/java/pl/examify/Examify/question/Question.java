@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.examify.Examify.exam.Exam;
 
 import javax.persistence.*;
 
@@ -18,11 +19,15 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-
     @Column(name = "content")
     private String content;
 
-    public Question(String content) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exam_id", nullable = false)
+    private Exam exam;
+
+    public Question(String content, Exam exam) {
         this.content = content;
+        this.exam = exam;
     }
 }

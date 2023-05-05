@@ -1,133 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=chrome">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-    $(document).ready(function () {
-    var currentQuestion = 0;
-    var correctAnswers = 0;
-    var questions;
-
-    // Fetch questions from /questions API endpoint
-    $.ajax({
-        url: "/questions",
-        type: "GET",
-        success: function (data) {
-         questions = data;
-        renderQuestion(questions[currentQuestion]);
-    },
-  });
-
-  // Render the question and answers
-  function renderQuestion(question) {
-    $("#question-heading").text(question.question.content);
-
-    $("#answers-list").empty();
-    $.each(question.answers, function (index, answer) {
-      var listItem = $("<li>");
-      var radioButton = $("<input>")
-        .attr("type", "radio")
-        .attr("name", "answer")
-        .attr("id", "answer" + index)
-        .addClass("answer")
-        .data("isGoodAnswer", answer.isGoodAnswer);
-      var label = $("<label>")
-        .attr("for", "answer" + index)
-        .text(answer.content);
-
-      listItem.append(radioButton);
-      listItem.append(label);
-      $("#answers-list").append(listItem);
-    });
-
-    $("#progress").text("Pytanie " + (currentQuestion + 1) + " z " + questions.length);
-  }
-
-  // Handle clicking the "Next" button
-  $("#submit-answer").on("click", function () {
-    // Check if an answer was selected
-    if (!$("input[name='answer']:checked").val()) {
-      alert("Proszę wybrać odpowiedź.");
-      return;
-    }
-
-    // Increment the correct answer count if the selected answer is correct
-    if ($("input[name='answer']:checked").data("isGoodAnswer")) {
-      correctAnswers++;
-    }
-
-    // If there are more questions, render the next one
-    if (currentQuestion < questions.length - 1) {
-      currentQuestion++;
-      renderQuestion(questions[currentQuestion]);
-    } else {
-      // If there are no more questions, show the summary
-      var percentage = Math.round((correctAnswers / questions.length) * 100);
-      $("#progress").text("Podsumowanie");
-      $("#question-heading").text("Udzielono " + correctAnswers + " poprawnych odpowiedzi na " + questions.length + " pytań. Wynik: " + percentage + "%");
-      $("#answers-list").empty();
-      $(".summary").text("Dziękujemy za udział w teście.");
-      $("#submit-answer").hide();
-    }
-  });
-});
-</script>
-    <style>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=chrome">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Exam</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
         *{
     box-sizing: border-box;
 }
 
 body {
+    display: flex;
     margin: 0;
     height: 100vh;
-    overflow: hidden;
-    background-color: #fff;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
     align-items: center;
-
+    justify-content: center;
+    overflow: hidden;
+    background-color: #efefef;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
-
-header {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #fff;
-        color: #fff;
-        padding: 40px;
-        text-align: center;
-
-
-      }
-
-      .header-photo {
-        width: 70px;
-        height: 100px;
-        background-color: #fff;
-        background-size: cover;
-        background-position: center;
-        margin-top: 10px;
-      }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-      }
-
-      .header-left a {
-        margin-right: 20px;
-        color: black;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-      }
 
 .exam-container {
     width: 600px;
@@ -135,10 +28,6 @@ header {
     background-color: #fff;
     box-shadow: 0 0 10px 2px rgba(120, 120, 120, 0.2);
     overflow: hidden;
-    margin-top: 20px;
-
-
-
 }
 
 .exam-header {
@@ -146,7 +35,6 @@ header {
     padding: 1rem;
     justify-content: space-between;
     align-items: center;
-
 }
 
 .exam-question {
@@ -154,13 +42,11 @@ header {
     padding: 0.1rem;
     font-weight: bold;
     font-size: 1.2rem;
-
 }
 
 .exam-body, .summary {
     padding: 0 2rem;
     margin-bottom: 2rem;
-
 }
 
 ul {
@@ -227,41 +113,33 @@ li.wrong-answer {
 
 li.correct-answer, li.wrong-answer {
     border-radius: 5px;
-
+    padding:  0.1rem;
 }
 
 </style>
 </head>
 <body>
-<header>
-    <div class="header-photo" style="background-image: url('../Content/Photos/Examify.png')"></div>
-    <div class="header-left">
-        <a href="main.html">STRONA GŁÓWNA</a>
-        <a href="exams.html">EGZAMINY</a>
-        <a href="createexam.html">STWÓRZ EGZAMIN</a>
-        <a href="login.html">LOGOWANIE</a>
-    </div>
-</header>
+<header></header>
 <div class="exam-container" id="exam">
-    <div class="exam-header">
-        <div id="progress">Pytanie 1 z 5</div>
-        <div id="count-down"></div>
-    </div>
-    <div class="exam-question">
-        <div id="question-heading">Ładowanie pytania...</div>
-    </div>
-    <div class="exam-body">
-        <ul id="answers-list">
+  <div class="exam-header">
+    <div id="progress">Pytanie 1 z 5</div>
+    <div id="count-down"></div>
+  </div>
+  <div class="exam-question">
+    <div id="question-heading">Ładowanie pytania...</div>
+  </div>
+  <div class="exam-body">
+    <ul id="answers-list">
 
-            <li>
-                <input type="radio" name="answer" class="answer" id="answer0">
-                <label for="answer0">Odpowiedzi</label>
-            </li>
-        </ul>
-    </div>
-    <div class="summary"></div>
+      <li>
+        <input type="radio" name="answer" class="answer" id="answer0">
+        <label for="answer0">Odpowiedzi</label>
+      </li>
+    </ul>
+  </div>
+  <div class="summary"></div>
 
-    <button id="submit-answer">Dalej</button>
+  <button id="submit-answer">Dalej</button>
 </div>
 
 <script>
@@ -277,7 +155,6 @@ class Exam {
         console.log("init app");
 
         this.progress = document.querySelector("#progress");
-       /* this.countDownInfo = document.querySelector("#count-down"); */
         this.questionHeading = document.getElementById("question-heading");
 
         this.answersList = document.querySelector("#answers-list");
@@ -299,7 +176,7 @@ class Exam {
             console.log("Brak pytań");
             return;
         }
-        // this.examMaxTime = jsonData.examMaxTime * 1000;
+
         this.id = jsonData.id;
         this.content = jsonData.content;
     }
