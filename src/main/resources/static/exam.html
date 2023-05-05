@@ -6,20 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
-    $(document).ready(function () {
-    var currentQuestion = 0;
-    var correctAnswers = 0;
-    var questions;
+$(document).ready(function () {
+  var currentQuestion = 0;
+  var questions;
+  var answers = [];
 
-    // Fetch questions from /questions API endpoint
-    $.ajax({
-        url: "/questions",
-        type: "GET",
-        success: function (data) {
-         questions = data;
-        renderQuestion(questions[currentQuestion]);
+  // Fetch questions from /questions API endpoint
+  $.ajax({
+    url: "/questions",
+    type: "GET",
+    success: function (data) {
+      questions = data;
+      renderQuestion(questions[currentQuestion]);
     },
   });
 
@@ -35,7 +34,9 @@
         .attr("name", "answer")
         .attr("id", "answer" + index)
         .addClass("answer")
-        .data("isGoodAnswer", answer.isGoodAnswer);
+        .data("isGoodAnswer", answer.isGoodAnswer)
+        .data("questionId", question.question.id)
+        .data("answerId", answer.id); // store the answer id instead of index
       var label = $("<label>")
         .attr("for", "answer" + index)
         .text(answer.content);
@@ -45,38 +46,57 @@
       $("#answers-list").append(listItem);
     });
 
-    $("#progress").text("Pytanie " + (currentQuestion + 1) + " z " + questions.length);
+    $("#progress").text(
+      "Question " + (currentQuestion + 1) + " of " + questions.length
+    );
+
+    // Add click event handler to the "Next" button
+    $("#submit-answer").on("click", function () {
+      // Check if an answer was selected
+      if (!$("input[name='answer']:checked").val()) {
+        alert("Please select an answer.");
+        return;
+      }
+
+      // Get the selected answer
+      var selectedAnswer = $("input[name='answer']:checked");
+
+      // Add the current question and answer IDs to the answers array
+      answers.push({
+        questionId: selectedAnswer.data("questionId"),
+        answerId: selectedAnswer.data("answerId"),
+      });
+
+      // If this is the last question, submit the answers to the server
+      if (currentQuestion == questions.length - 1) {
+        // Submit the question and answer IDs to the /exam endpoint
+        $.ajax({
+          url: "/exam",
+          type: "POST",
+          data: JSON.stringify(answers),
+          contentType: "application/json",
+          success: function (data) {
+            // Display the percentage of correct answers
+            $("#question-heading").text("Score: " + data + "%");
+
+            // Hide the answers list and submit button
+            $("#answers-list").hide();
+            $("#submit-answer").hide();
+          },
+          error: function (xhr, status, error) {
+            console.error(xhr.responseText);
+          },
+        });
+      } else {
+        // Otherwise, go to the next question
+        currentQuestion++;
+        renderQuestion(questions[currentQuestion]);
+      }
+    });
   }
-
-  // Handle clicking the "Next" button
-  $("#submit-answer").on("click", function () {
-    // Check if an answer was selected
-    if (!$("input[name='answer']:checked").val()) {
-      alert("Proszę wybrać odpowiedź.");
-      return;
-    }
-
-    // Increment the correct answer count if the selected answer is correct
-    if ($("input[name='answer']:checked").data("isGoodAnswer")) {
-      correctAnswers++;
-    }
-
-    // If there are more questions, render the next one
-    if (currentQuestion < questions.length - 1) {
-      currentQuestion++;
-      renderQuestion(questions[currentQuestion]);
-    } else {
-      // If there are no more questions, show the summary
-      var percentage = Math.round((correctAnswers / questions.length) * 100);
-      $("#progress").text("Podsumowanie");
-      $("#question-heading").text("Udzielono " + correctAnswers + " poprawnych odpowiedzi na " + questions.length + " pytań. Wynik: " + percentage + "%");
-      $("#answers-list").empty();
-      $(".summary").text("Dziękujemy za udział w teście.");
-      $("#submit-answer").hide();
-    }
-  });
 });
 </script>
+
     <style>
         *{
     box-sizing: border-box;
