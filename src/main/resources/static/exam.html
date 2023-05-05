@@ -2,6 +2,94 @@
 <html>
 <head>
     <title>Exam</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 36px;
+            color: #333;
+            text-shadow: 1px 1px #ddd;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 14px 20px;
+            margin: 0 auto;
+            display: block;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        select {
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            margin: 10px 0;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #fff;
+            box-shadow: 1px 1px #ddd;
+        }
+
+        select:focus {
+            outline: none;
+            box-shadow: 2px 2px #bbb;
+        }
+
+        #questions {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .question {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 2px 2px #bbb;
+            border-radius: 5px;
+        }
+
+        .question p {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .question select {
+            margin-top: 10px;
+        }
+
+        #submit-answers {
+            display: block;
+            margin: 20px auto;
+        }
+
+        .fa-spinner {
+            animation: spin 1s infinite linear;
+        }
+
+        @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {

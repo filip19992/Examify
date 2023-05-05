@@ -1,63 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Create Exam</title>
+  <title>Create Exam</title>
+  <script>
+		function createExam() {
+			// get the values of the input fields
+			var question1 = document.getElementById("question1").value;
+			var q1_answer1 = document.getElementById("q1_answer1").value;
+			var q1_answer2 = document.getElementById("q1_answer2").value;
+			var q1_answer3 = document.getElementById("q1_answer3").value;
+			var q1_answer1_isGoodAnswer = document.getElementById("q1_answer1_isGoodAnswer").checked;
+			var q1_answer2_isGoodAnswer = document.getElementById("q1_answer2_isGoodAnswer").checked;
+			var q1_answer3_isGoodAnswer = document.getElementById("q1_answer3_isGoodAnswer").checked;
+
+			var question2 = document.getElementById("question2").value;
+			var q2_answer1 = document.getElementById("q2_answer1").value;
+			var q2_answer2 = document.getElementById("q2_answer2").value;
+			var q2_answer3 = document.getElementById("q2_answer3").value;
+			var q2_answer1_isGoodAnswer = document.getElementById("q2_answer1_isGoodAnswer").checked;
+			var q2_answer2_isGoodAnswer = document.getElementById("q2_answer2_isGoodAnswer").checked;
+			var q2_answer3_isGoodAnswer = document.getElementById("q2_answer3_isGoodAnswer").checked;
+
+			// create the JSON object
+			var exam = {
+				"questions": [
+					{
+						"questionContent": question1,
+						"answerToCreateExamList": [
+							{
+								"content": q1_answer1,
+								"isGoodAnswer": q1_answer1_isGoodAnswer ? "Y" : "N"
+							},
+							{
+								"content": q1_answer2,
+								"isGoodAnswer": q1_answer2_isGoodAnswer ? "Y" : "N"
+							},
+							{
+								"content": q1_answer3,
+								"isGoodAnswer": q1_answer3_isGoodAnswer ? "Y" : "N"
+							}
+						]
+					},
+					{
+						"questionContent": question2,
+						"answerToCreateExamList": [
+							{
+								"content": q2_answer1,
+								"isGoodAnswer": q2_answer1_isGoodAnswer ? "Y" : "N"
+							},
+							{
+								"content": q2_answer2,
+								"isGoodAnswer": q2_answer2_isGoodAnswer ? "Y" : "N"
+							},
+							{
+								"content": q2_answer3,
+								"isGoodAnswer": q2_answer3_isGoodAnswer ? "Y" : "N"
+							}
+						]
+					}
+				],
+				"studentUsernames": ["student@student.com"]
+			};
+
+			// send the JSON object to the server
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "/exam/create", true);
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.send(JSON.stringify(exam));
+		}
+	</script>
 </head>
 <body>
 <h1>Create Exam</h1>
-<form method="post" action="/exam/create">
-    <label for="num-questions">Number of questions:</label>
-    <input type="number" id="num-questions" name="numQuestions" value="1" min="1" max="10" required>
+<form>
+  <fieldset>
+    <legend>Question 1:</legend>
+    <label for="question1">Question content:</label>
+    <input type="text" id="question1" name="question1"><br><br>
+    <label for="q1_answer1">Answer 1:</label>
+    <input type="text" id="q1_answer1" name="q1_answer1">
+    <input type="checkbox" id="q1_answer1_isGoodAnswer" name="q1_answer1_isGoodAnswer">Is Good Answer?<br>
 
-    <div id="questions-container"></div>
+    <label for="q1_answer2">Answer 2:</label>
+    <input type="text" id="q1_answer2" name="q1_answer2">
+    <input type="checkbox" id="q1_answer2_isGoodAnswer" name="q1_answer2_isGoodAnswer">Is Good Answer?<br>
 
-    <button type="button" onclick="addQuestion()">Add Question</button>
-    <button type="submit">Create Exam</button>
+    <label for="q1_answer3">Answer 3:</label>
+    <input type="text" id="q1_answer3" name="q1_answer3">
+    <input type="checkbox" id="q1_answer3_isGoodAnswer" name="q1_answer3_isGoodAnswer">Is Good Answer?<br>
+  </fieldset>
+  <br>
+  <fieldset>
+    <legend>Question 2:</legend>
+    <label for="question2">Question content:</label>
+    <input type="text" id="question2" name="question2"><br><br>
+
+    <label for="q2_answer1">Answer 1:</label>
+    <input type="text" id="q2_answer1" name="q2_answer1">
+    <input type="checkbox" id="q2_answer1_isGoodAnswer" name="q2_answer1_isGoodAnswer">Is Good Answer?<br>
+
+    <label for="q2_answer2">Answer 2:</label>
+    <input type="text" id="q2_answer2" name="q2_answer2">
+    <input type="checkbox" id="q2_answer2_isGoodAnswer" name="q2_answer2_isGoodAnswer">Is Good Answer?<br>
+
+    <label for="q2_answer3">Answer 3:</label>
+    <input type="text" id="q2_answer3" name="q2_answer3">
+    <input type="checkbox" id="q2_answer3_isGoodAnswer" name="q2_answer3_isGoodAnswer">Is Good Answer?<br>
+  </fieldset>
+  <br>
+  <input type="button" value="Create Exam" onclick="createExam()">
 </form>
-
-<script>
-    var numAnswers = 3;
-
-    function addQuestion() {
-        var numQuestions = document.getElementById("num-questions").value;
-        var questionsContainer = document.getElementById("questions-container");
-        var questionTemplate = `
-          <div>
-            <label for="question-content-${numQuestions}">Question ${numQuestions}:</label>
-            <input type="text" id="question-content-${numQuestions}" name="questions[${numQuestions - 1}][questionContent]" required>
-
-            <div>
-              <label for="answer-content-${numQuestions}-1">Answer 1:</label>
-              <input type="text" id="answer-content-${numQuestions}-1" name="questions[${numQuestions - 1}][answerToCreateExamList][0][content]" required>
-              <label for="answer-isGoodAnswer-${numQuestions}-1">Is Good Answer:</label>
-              <input type="radio" id="answer-isGoodAnswer-${numQuestions}-1-yes" name="questions[${numQuestions - 1}][answerToCreateExamList][0][isGoodAnswer]" value="Y" required>
-              <label for="answer-isGoodAnswer-${numQuestions}-1-yes">Yes</label>
-              <input type="radio" id="answer-isGoodAnswer-${numQuestions}-1-no" name="questions[${numQuestions - 1}][answerToCreateExamList][0][isGoodAnswer]" value="N" required>
-              <label for="answer-isGoodAnswer-${numQuestions}-1-no">No</label>
-            </div>
-
-            <div>
-              <label for="answer-content-${numQuestions}-2">Answer 2:</label>
-              <input type="text" id="answer-content-${numQuestions}-2" name="questions[${numQuestions - 1}][answerToCreateExamList][1][content]" required>
-              <label for="answer-isGoodAnswer-${numQuestions}-2">Is Good Answer:</label>
-              <input type="radio" id="answer-isGoodAnswer-${numQuestions}-2-yes" name="questions[${numQuestions - 1}][answerToCreateExamList][1][isGoodAnswer]" value="Y" required>
-              <label for="answer-isGoodAnswer-${numQuestions}-2-yes">Yes</label>
-              <input type="radio" id="answer-isGoodAnswer-${numQuestions}-2-no" name="questions[${numQuestions - 1}][answerToCreateExamList][1][isGoodAnswer]" value="N" required>
-              <label for="answer-isGoodAnswer-${numQuestions}-2-no">No</label>
-            </div>
-
-            <div>
-              <label for="answer-content-${numQuestions}-3">Answer 3:</label>
-              <input type="text" id="answer-content-${numQuestions}-3" name="questions[${numQuestions - 1}
-                <label for="answer-isGoodAnswer-${numQuestions}-3">Is Good Answer:</label>
-              <input type="radio" id="answer-isGoodAnswer-${numQuestions}-3-yes" name="questions[${numQuestions - 1}][answerToCreateExamList][2][isGoodAnswer]" value="Y" required>
-              <label for="answer-isGoodAnswer-${numQuestions}-3-yes">Yes</label>
-              <input type="radio" id="answer-isGoodAnswer-${numQuestions}-3-no" name="questions[${numQuestions - 1}][answerToCreateExamList][2][isGoodAnswer]" value="N" required>
-              <label for="answer-isGoodAnswer-${numQuestions}-3-no">No</label>
-            </div>
-            `;
-        questionsContainer.insertAdjacentHTML("beforeend", questionTemplate);
-    }
-</script>
 </body>
 </html>
