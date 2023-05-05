@@ -9,6 +9,7 @@
             margin: 0;
             padding: 0;
             background-color: #f2f2f2;
+            font-size: 25px;
         }
         h1 {
             text-align: center;
@@ -137,6 +138,7 @@
                     success: function(response) {
                         var value = response;
                         alert("Answers submitted successfully! Your score is: " + value + "%");
+                        window.location.href = '/';
                     }
                 });
             });
