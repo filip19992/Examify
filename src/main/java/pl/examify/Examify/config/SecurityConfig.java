@@ -42,18 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login")
                 .usernameParameter("username")
                 .passwordParameter("password")
-                .successHandler(new AuthenticationSuccessHandler() {
-                    @Override
-                    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        response.getWriter().write("{\"access_token\": \"" + generateAccessToken(authentication) + "\"}");
-                    }
-                })
-                .failureHandler(new AuthenticationFailureHandler() {
-                    @Override
-                    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                        response.getWriter().write("{\"error\": \"" + exception.getMessage() + "\"}");
-                    }
-                })
+                .successHandler((request, response, authentication) -> response.sendRedirect(""))
+                .failureHandler((request, response, exception) -> response.sendRedirect("/login"))
                 .and()
                 .logout()
                 .logoutUrl("/api/logout")
@@ -70,10 +60,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService);
-    }
-
-    private String generateAccessToken(Authentication authentication) {
-        return "";
     }
 
 }
