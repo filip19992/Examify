@@ -58,17 +58,17 @@ $(document).ready(function () {
         return;
       }
 
-      // Get the selected answer
-      var selectedAnswer = $("input[name='answer']:checked");
+        var answers = [];
+        $(".answer:checked").each(function() {
+            answers.push({
+                "questionId": $(this).data("questionId"),
+                "answerId": $(this).data("answerId")
+            });
+        });
 
-      // Add the current question and answer IDs to the answers array
-      answers.push({
-        questionId: selectedAnswer.data("questionId"),
-        answerId: selectedAnswer.data("answerId"),
-      });
 
-      // If this is the last question, submit the answers to the server
-      if (currentQuestion == questions.length - 1) {
+        // If this is the last question, submit the answers to the server
+      if (currentQuestion === questions.length - 1) {
         // Submit the question and answer IDs to the /exam endpoint
         $.ajax({
           url: "/exam",
@@ -76,8 +76,6 @@ $(document).ready(function () {
           data: JSON.stringify(answers),
           contentType: "application/json",
           success: function (data) {
-            // Display the percentage of correct answers
-            $("#question-heading").text("Score: " + data + "%");
 
             // Hide the answers list and submit button
             $("#answers-list").hide();
