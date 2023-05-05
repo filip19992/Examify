@@ -1,477 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=chrome">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-$(document).ready(function () {
-  var currentQuestion = 0;
-  var questions;
-  var answers = [];
+        $(document).ready(function() {
+            // Get questions from /questions
+            $("#get-questions").click(function() {
+                $.ajax({
+                    url: "/questions",
+                    type: "GET",
+                    success: function(data) {
+                        // Display questions and answers
+                        $("#questions").empty();
+                        for (var i = 0; i < data.length; i++) {
+                            var question = data[i].question;
+                            var answers = data[i].answers;
+                            var html = "<div>";
+                            html += "<p>" + question.content + "</p>";
+                            html += "<select name='question" + question.id + "'>";
+                            for (var j = 0; j < answers.length; j++) {
+                                html += "<option value='" + answers[j].answerId + "'>" + answers[j].content + "</option>";
+                            }
+                            html += "</select>";
+                            html += "</div>";
+                            $("#questions").append(html);
+                        }
+                        $("#submit-answers").show();
+                    }
+                });
+            });
 
-  // Fetch questions from /questions API endpoint
-  $.ajax({
-    url: "/questions",
-    type: "GET",
-    success: function (data) {
-      questions = data;
-      renderQuestion(questions[currentQuestion]);
-    },
-  });
-
-  // Render the question and answers
-  function renderQuestion(question) {
-    $("#question-heading").text(question.question.content);
-
-    $("#answers-list").empty();
-    $.each(question.answers, function (index, answer) {
-      var listItem = $("<li>");
-      var radioButton = $("<input>")
-        .attr("type", "radio")
-        .attr("name", "answer")
-        .attr("id", "answer" + index)
-        .addClass("answer")
-        .data("isGoodAnswer", answer.isGoodAnswer)
-        .data("questionId", question.question.id)
-        .data("answerId", answer.id); // store the answer id instead of index
-      var label = $("<label>")
-        .attr("for", "answer" + index)
-        .text(answer.content);
-
-      listItem.append(radioButton);
-      listItem.append(label);
-      $("#answers-list").append(listItem);
-    });
-
-    $("#progress").text(
-      "Question " + (currentQuestion + 1) + " of " + questions.length
-    );
-
-    // Add click event handler to the "Next" button
-    $("#submit-answer").on("click", function () {
-      // Check if an answer was selected
-      if (!$("input[name='answer']:checked").val()) {
-        alert("Please select an answer.");
-        return;
-      }
-
-        var answers = [];
-        $(".answer:checked").each(function() {
-            answers.push({
-                "questionId": $(this).data("questionId"),
-                "answerId": $(this).data("answerId")
+            // Submit answers to /exam
+            $("#submit-answers").click(function() {
+                var answers = [];
+                $("select").each(function() {
+                    var questionId = $(this).attr("name").substr(8);
+                    var answerId = $(this).val();
+                    answers.push({questionId: questionId, answerId: answerId});
+                });
+                $.ajax({
+                    url: "/exam",
+                    type: "POST",
+                    data: JSON.stringify(answers),
+                    contentType: "application/json",
+                    success: function() {
+                        alert("Answers submitted successfully!");
+                    }
+                });
             });
         });
-
-
-        // If this is the last question, submit the answers to the server
-      if (currentQuestion === questions.length - 1) {
-        // Submit the question and answer IDs to the /exam endpoint
-        $.ajax({
-          url: "/exam",
-          type: "POST",
-          data: JSON.stringify(answers),
-          contentType: "application/json",
-          success: function (data) {
-
-            // Hide the answers list and submit button
-            $("#answers-list").hide();
-            $("#submit-answer").hide();
-          },
-          error: function (xhr, status, error) {
-            console.error(xhr.responseText);
-          },
-        });
-      } else {
-        // Otherwise, go to the next question
-        currentQuestion++;
-        renderQuestion(questions[currentQuestion]);
-      }
-    });
-  }
-});
-</script>
-
-    <style>
-        *{
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-    height: 100vh;
-    overflow: hidden;
-    background-color: #fff;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-
-}
-
-header {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #fff;
-        color: #fff;
-        padding: 40px;
-        text-align: center;
-
-
-      }
-
-      .header-photo {
-        width: 70px;
-        height: 100px;
-        background-color: #fff;
-        background-size: cover;
-        background-position: center;
-        margin-top: 10px;
-      }
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-      }
-
-      .header-left a {
-        margin-right: 20px;
-        color: black;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-      }
-
-.exam-container {
-    width: 600px;
-    border-radius: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px 2px rgba(120, 120, 120, 0.2);
-    overflow: hidden;
-    margin-top: 20px;
-
-
-
-}
-
-.exam-header {
-    display: flex;
-    padding: 1rem;
-    justify-content: space-between;
-    align-items: center;
-
-}
-
-.exam-question {
-    text-align: center;
-    padding: 0.1rem;
-    font-weight: bold;
-    font-size: 1.2rem;
-
-}
-
-.exam-body, .summary {
-    padding: 0 2rem;
-    margin-bottom: 2rem;
-
-}
-
-ul {
-    list-style-type: none;
-}
-
-ul li {
-    margin: 1rem 0;
-    display: flex;
-    font-size: 1.2rem;
-}
-
-ul li input {
-    align-self: center;
-    margin-right: 15px;
-    cursor: pointer;
-}
-
-ul li label {
-    flex-grow: 1;
-    cursor: pointer;
-}
-
-button {
-    display: block;
-    padding: 1rem;
-    width: 100%;
-    border: none;
-    background-color: #18d771;
-    cursor: pointer;
-    color: #fff;
-    font-size: 1.1rem;
-    font-family: inherit;
-}
-
-button:hover {
-    background-color: #18d771;
-}
-
-.hide {
-    display: none;
-}
-
-.show {
-    display: block;
-}
-
-.summary {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.summary ul {
-    margin-bottom: 2rem;
-}
-
-li.correct-answer {
-    background-color: #b6eff7;
-}
-
-li.wrong-answer {
-    background-color: #f96868;
-}
-
-li.correct-answer, li.wrong-answer {
-    border-radius: 5px;
-
-}
-
-</style>
+    </script>
 </head>
 <body>
-<header>
-    <div class="header-photo" style="background-image: url('../Content/Photos/Examify.png')"></div>
-    <div class="header-left">
-        <a href="main.html">STRONA GŁÓWNA</a>
-        <a href="exams.html">EGZAMINY</a>
-        <a href="createexam.html">STWÓRZ EGZAMIN</a>
-        <a href="login.html">LOGOWANIE</a>
-    </div>
-</header>
-<div class="exam-container" id="exam">
-    <div class="exam-header">
-        <div id="progress">Pytanie 1 z 5</div>
-        <div id="count-down"></div>
-    </div>
-    <div class="exam-question">
-        <div id="question-heading">Ładowanie pytania...</div>
-    </div>
-    <div class="exam-body">
-        <ul id="answers-list">
+<h1>Exam</h1>
 
-            <li>
-                <input type="radio" name="answer" class="answer" id="answer0">
-                <label for="answer0">Odpowiedzi</label>
-            </li>
-        </ul>
-    </div>
-    <div class="summary"></div>
+<!-- Button to retrieve questions with AJAX -->
+<button id="get-questions">Get Questions</button>
 
-    <button id="submit-answer">Dalej</button>
-</div>
+<!-- Div to display questions and answers -->
+<div id="questions"></div>
 
-<script>
-
-window.onload = function() {
-    exam.init();
-}
-
-class Exam {
-    currentQuestionIndex = -1;
-
-    async init() {
-        console.log("init app");
-
-        this.progress = document.querySelector("#progress");
-       /* this.countDownInfo = document.querySelector("#count-down"); */
-        this.questionHeading = document.getElementById("question-heading");
-
-        this.answersList = document.querySelector("#answers-list");
-        this.summary = document.querySelector(".summary");
-
-        this.submitButton = document.querySelector("#submit-answer");
-        this.submitButton.addEventListener("click", this.submitAnswer);
-
-
-        await this.loadData();
-
-    }
-
-    loadData = async () => {
-        const serverData = await fetch("/questions");
-        const jsonData = await serverData.json();
-
-        if (!jsonData.questions) {
-            console.log("Brak pytań");
-            return;
-        }
-        // this.examMaxTime = jsonData.examMaxTime * 1000;
-        this.id = jsonData.id;
-        this.content = jsonData.content;
-    }
-
-    submitAnswer = () => {
-        let userSelectedInput =
-            document.querySelector("input[type='radio']:checked");
-            //console.log(userSelectedInput);
-
-        const userSelectedIndex = userSelectedInput.getAttribute("data-index");
-
-        const question = this.questions[ this.currentQuestionIndex ];
-        question.userSelectedIndex = userSelectedIndex;
-
-        if (userSelectedInput) this.setNextQuestionData();
-    }
-    //  // countDown = () => {
-    //  //        if (!this.countDownInterval) {
-    //  //            this.examStartTime = new Date().getTime();
-    //  //            this.examEndTime = this.examStartTime + this.examMaxTime;
-    //  //
-    //  //            this.countDownInterval = setInterval( () => {
-    //  //                const currentTime = new Date().getTime();
-    //  //
-    //  //                if (currentTime >= this.examEndTime) {
-    //  //                    console.log("Koniec egzaminu");
-    //  //                    this.stopCountDown();
-    //  //                    this.showSummary();
-    //  //                    return;
-    //  //                }countDown = () => {
-    //  //    if (!this.countDownInterval) {
-    //  //        this.examStartTime = new Date().getTime();
-    //  //        this.examEndTime = this.examStartTime + this.examMaxTime;
-    //  //
-    //  //        this.countDownInterval = setInterval( () => {
-    //  //            const currentTime = new Date().getTime();
-    //  //
-    //  //            if (currentTime >= this.examEndTime) {
-    //  //                console.log("Koniec egzaminu");
-    //  //                this.stopCountDown();
-    //  //                this.showSummary();
-    //  //                return;
-    //  //            }
-    //
-    //             let timeLeft = Math.floor( (this.examEndTime - currentTime) / 1000 );
-    //
-    //             this.countDownInfo.innerHTML = "Pozostało: " + timeLeft + " sekund";
-    //         }, 1000 );
-    //     }
-    // }
-
-    stopCountDown = () => {
-        clearInterval( this.countDownInterval );
-        this.countDownInterval = null;
-        this.countDownInfo.innerHTML = "";
-    }
-
-    setNextQuestionData = () => {
-        this.currentQuestionIndex++;
-
-        if (this.currentQuestionIndex >= this.questions.length) {
-            console.log("Koniec examinu");
-            this.showSummary();
-            return;
-        }
-
-        const question = this.questions[ this.currentQuestionIndex ];
-        this.questionHeading.innerHTML = question.q;
-
-        const progressStr = `Pytanie ${this.currentQuestionIndex+1}
-            z ${this.questions.length}`;
-        this.progress.innerHTML = progressStr;
-
-        const answersHtml = question.answers.map( (answerText, index) => {
-            const answerId = "answer" + index;
-            return `
-                <li>
-                    <input type="radio" name="answer" id="${answerId}"
-                        data-index="${index}" class="answer">
-                    <label for="${answerId}">
-                        ${answerText}
-                    </label>
-                </li>
-            `;
-        } ).join("");
-
-        this.answersList.innerHTML = answersHtml;
-    }
-
-    showSummary = () => {
-        this.stopCountDown();
-
-        this.answersList.classList.add("hide");
-        this.submitButton.classList.add("hide");
-        this.summary.classList.remove("hide");
-
-        this.questionHeading.innerHTML = "Podsumowanie wyników:";
-
-        let numCorrectAnswers = 0;
-
-        let summaryHtml = this.questions.map( (question, questionIndex) => {
-            const answerId = "answer" + questionIndex;
-
-            const answersHtml = question.answers.map( (answerText, answerIndex) => {
-                let classToAdd = "";
-                let checkedAttr = "";
-
-                if (question.userSelectedIndex !== undefined) {
-
-                    if (question.userSelectedIndex == question.correctAnswerNum
-                        && answerIndex == question.correctAnswerNum) {
-                            classToAdd = "correct-answer";
-                            checkedAttr = "checked";
-
-                            numCorrectAnswers++;
-                    }
-
-                    if (question.userSelectedIndex != question.correctAnswerNum
-                        && answerIndex == question.userSelectedIndex) {
-                        classToAdd = "wrong-answer";
-                        checkedAttr = "checked";
-                    }
-                }
-
-                return `
-                    <li class="${classToAdd}">
-                        <input ${checkedAttr} disabled type="radio" name="answer"
-                            id="${answerId}" data-index="" class="answer">
-                        <label for="${answerId}"> ${answerText} </label>
-                    </li>
-                `;
-            } ).join("");
-
-            this.summary.scrollTop = 0;
-
-            return `
-                <h4>Pytanie nr. ${questionIndex} : ${question.q} </h4>
-                <ul>
-                    ${answersHtml}
-                </ul>
-            `;
-        } ).join("");
-
-        summaryHtml += `
-            <hr>
-            <h3> Ilość prawidłowych odpowiedzi: ${numCorrectAnswers}, na
-            ${this.questions.length} </h3>
-        `;
-
-        this.summary.innerHTML = summaryHtml;
-    }
-}
-
-const exam = new Exam();
-        </script>
+<!-- Button to submit answers with AJAX (hidden by default) -->
+<button id="submit-answers" style="display:none;">Submit Answers</button>
 </body>
 </html>

@@ -41,11 +41,25 @@ public class TemplateController {
         }
     }
 
+    @GetMapping("/exam/create")
+    public ResponseEntity<String> examCreate(HttpServletRequest request) {
+        var resource = getCreateExamPage();
+        try {
+            String content = new String(resource.getInputStream().readAllBytes());
+            return ResponseEntity.ok(content);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     private Resource getExamPage() {
         return resourceLoader.getResource("classpath:/static/exam.html");
     }
 
     private Resource getMainPage() {
         return resourceLoader.getResource("classpath:/static/main.html");
+    }
+    private Resource getCreateExamPage() {
+        return resourceLoader.getResource("classpath:/static/createexam.html");
     }
 }
