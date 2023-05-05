@@ -45,12 +45,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .logout()
                 .logoutUrl("/api/logout")
-                .logoutSuccessHandler(new LogoutSuccessHandler() {
-                    @Override
-                    public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-                        response.sendRedirect("/");
-                    }
-                })
+                .logoutSuccessHandler((request, response, authentication) -> response.sendRedirect("/"))
                 .and()
                 .csrf().disable();
     }
