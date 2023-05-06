@@ -136,11 +136,9 @@
 <script>
         const currentUserElement = document.getElementById('current-user');
 
-            // Make a GET request to the "/getCurrentUser" endpoint
             fetch('/getCurrentUser')
         .then(response => response.text())
         .then(data => {
-            // Set the returned value in the HTML element
             currentUserElement.textContent = data;
         })
         .catch(error => console.error(error));

@@ -96,13 +96,11 @@
 
     <script>
         $(document).ready(function() {
-            // Get questions from /questions
             $("#get-questions").click(function() {
                 $.ajax({
                     url: "/questions",
                     type: "GET",
                     success: function(data) {
-                        // Display questions and answers
                         $("#questions").empty();
                         for (var i = 0; i < data.length; i++) {
                             var question = data[i].question;
@@ -121,8 +119,6 @@
                     }
                 });
             });
-
-            // Submit answers to /exam
             $("#submit-answers").click(function() {
                 var answers = [];
                 $("select").each(function() {
@@ -150,7 +146,7 @@
         font-size:30px;">Time left: 20 minutes</div>
 <h1>Exam</h1>
 
-<!-- Button to retrieve questions with AJAX -->
+
 <button id="get-questions">Get Questions</button>
 <script type="text/javascript">
   var ile = 1200;
@@ -166,10 +162,10 @@
     intervalHandler = setInterval(stoper, 1000);
   });
 </script>
-<!-- Div to display questions and answers -->
+
 <div id="questions"></div>
 
-<!-- Button to submit answers with AJAX (hidden by default) -->
+
 <button id="submit-answers" style="display:none;">Submit Answers</button>
 </body>
 </html>
